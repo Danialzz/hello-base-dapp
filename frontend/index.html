@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelloBase — Message dApp</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --base-blue: #0052FF;
+      --base-dark: #0A0A0F;
+      --surface: #13131A;
+      --surface-2: #1C1C27;
+      --border: #2A2A3D;
+      --text: #F0F0F8;
+      --text-muted: #7A7A9A;
+      --success: #00C896;
+      --error: #FF4D6A;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--base-dark);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .logo-dot {
+      width: 32px;
+      height: 32px;
+      background: var(--base-blue);
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    header h1 span { color: var(--base-blue); }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: 20px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .wallet-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .status-dot.connected { background: var(--success); }
+
+    .wallet-address {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-muted);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    button {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: var(--base-blue);
+      color: #fff;
+      padding: 12px 24px;
+    }
+
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 12px 24px;
+    }
+
+    .btn-secondary:hover:not(:disabled) { border-color: var(--base-blue); }
+
+    .message-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      min-height: 64px;
+      word-break: break-word;
+      margin-bottom: 16px;
+    }
+
+    .message-box.empty { color: var(--text-muted); font-style: italic; }
+
+    textarea {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text);
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 8px;
+    }
+
+    textarea:focus { border-color: var(--base-blue); }
+    textarea::placeholder { color: var(--text-muted); }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-bottom: 12px;
+      font-family: var(--mono);
+    }
+
+    .char-count.over { color: var(--error); }
+
+    .actions { display: flex; gap: 10px; }
+    .actions .btn-primary { flex: 1; }
+
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { border-color: var(--success); }
+    #toast.error { border-color: var(--error); }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--text-muted); }
+    .info-val { font-family: var(--mono); font-size: 12px; }
+    .info-val a { color: var(--base-blue); text-decoration: none; }
+    .info-val a:hover { text-decoration: underline; }
+
+    .network-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,82,255,0.12);
+      color: var(--base-blue);
+      border: 1px solid rgba(0,82,255,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    .network-badge .dot { width: 6px; height: 6px; background: var(--base-blue); border-radius: 50%; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <span class="logo-text">HelloBase</span>
+    </div>
+    <div class="network-badge">
+      <div class="dot"></div>
+      Base Sepolia Testnet
+    </div>
+    <h1>Store a message<br><span>on-chain.</span></h1>
+    <p>A simple dApp that reads and writes a message to the Base blockchain.</p>
+  </header>
+
+  <div class="card">
+    <div class="card-label">Wallet</div>
+    <div class="wallet-row">
+      <div class="status-dot" id="statusDot"></div>
+      <div class="wallet-address" id="walletAddress">Not connected</div>
+      <button class="btn-primary" id="connectBtn" onclick="connectWallet()">Connect</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Current Message On-Chain</div>
+    <div class="message-box empty" id="currentMessage">Connect your wallet to read the message.</div>
+    <button class="btn-secondary" id="readBtn" onclick="readMessage()" disabled>Read Message</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Set New Message</div>
+    <textarea id="messageInput" placeholder="Type your message (max 280 characters)..." maxlength="280" oninput="updateCharCount()"></textarea>
+    <div class="char-count" id="charCount">0 / 280</div>
+    <div class="actions">
+      <button class="btn-primary" id="writeBtn" onclick="setMessage()" disabled>Save to Blockchain</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Contract Info</div>
+    <div class="info-row">
+      <span class="info-key">Network</span>
+      <span class="info-val">Base Sepolia (Chain ID: 84532)</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Contract Address</span>
+      <span class="info-val">
+        <a href="#" id="contractLink" target="_blank">— deploy first —</a>
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Solidity Version</span>
+      <span class="info-val">0.8.20</span>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+    const BASE_SEPOLIA_CHAIN_ID = "0x14A34";
+
+    const ABI = [
+      "function getMessage() external view returns (string memory)",
+      "function setMessage(string calldata _newMessage) external",
+      "event MessageUpdated(address indexed sender, string newMessage)"
+    ];
+
+    let provider, signer, contract;
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showToast("❌ MetaMask not found. Please install it.", "error");
+        return;
+      }
+      try {
+        await switchToBaseSepolia();
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const address = accounts[0];
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        document.getElementById("walletAddress").textContent = address.slice(0, 6) + "..." + address.slice(-4);
+        document.getElementById("statusDot").classList.add("connected");
+        document.getElementById("connectBtn").textContent = "Connected";
+        document.getElementById("connectBtn").disabled = true;
+        document.getElementById("readBtn").disabled = false;
+        document.getElementById("writeBtn").disabled = false;
+        if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
+          updateContractLink();
+          await readMessage();
+        }
+        showToast("✅ Wallet connected!", "success");
+      } catch (err) {
+        showToast("❌ " + (err.message || "Connection failed"), "error");
+      }
+    }
+
+    async function switchToBaseSepolia() {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: BASE_SEPOLIA_CHAIN_ID }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: BASE_SEPOLIA_CHAIN_ID,
+              chainName: "Base Sepolia Testnet",
+              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://sepolia.base.org"],
+              blockExplorerUrls: ["https://sepolia.basescan.org"],
+            }],
+          });
+        }
+      }
+    }
+
+    async function readMessage() {
+      if (!contract) return;
+      const btn = document.getElementById("readBtn");
+      btn.innerHTML = '<span class="spinner"></span>';
+      btn.disabled = true;
+      try {
+        const msg = await contract.getMessage();
+        const el = document.getElementById("currentMessage");
+        el.textContent = msg;
+        el.classList.remove("empty");
+      } catch (err) {
+        showToast("❌ Failed to read: " + err.message, "error");
+      } finally {
+        btn.textContent = "Read Message";
+        btn.disabled = false;
+      }
+    }
+
+    async function setMessage() {
+      if (!contract) return;
+      const input = document.getElementById("messageInput").value.trim();
+      if (!input) { showToast("⚠️ Message cannot be empty.", "error"); return; }
+      if (input.length > 280) { showToast("⚠️ Message too long.", "error"); return; }
+      const btn = document.getElementById("writeBtn");
+      btn.innerHTML = '<span class="spinner"></span> Submitting...';
+      btn.disabled = true;
+      try {
+        const tx = await contract.setMessage(input);
+        showToast("⏳ Transaction sent — waiting for confirmation...", "");
+        await tx.wait();
+        showToast("✅ Message saved on-chain!", "success");
+        document.getElementById("messageInput").value = "";
+        updateCharCount();
+        await readMessage();
+      } catch (err) {
+        const msg = err?.reason || err?.message || "Transaction failed";
+        showToast("❌ " + msg, "error");
+      } finally {
+        btn.textContent = "Save to Blockchain";
+        btn.disabled = false;
+      }
+    }
+
+    function updateCharCount() {
+      const len = document.getElementById("messageInput").value.length;
+      const el = document.getElementById("charCount");
+      el.textContent = `${len} / 280`;
+      el.classList.toggle("over", len > 280);
+    }
+
+    function updateContractLink() {
+      const link = document.getElementById("contractLink");
+      link.textContent = CONTRACT_ADDRESS.slice(0, 6) + "..." + CONTRACT_ADDRESS.slice(-4);
+      link.href = `https://sepolia.basescan.org/address/${CONTRACT_ADDRESS}`;
+    }
+
+    let toastTimer;
+    function showToast(message, type) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.className = `show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.className = ""; }, 4000);
+    }
+
+    if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") updateContractLink();
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+</body>
+</html>
