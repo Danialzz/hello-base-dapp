@@ -3,436 +3,696 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HelloBase — Message dApp</title>
+  <title>HelloBase — On-Chain Message Board on Base</title>
+  <meta name="description" content="Leave your message on Base L2. A beautiful public on-chain guestbook." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    :root {
+      --base-blue: #0052FF;
+      --base-blue-glow: rgba(0, 82, 255, 0.45);
+      --bg: #05050A;
+      --surface: rgba(18, 18, 28, 0.75);
+      --surface-solid: #12121C;
+      --surface-2: #1A1A28;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #F4F4F8;
+      --text-muted: #8B8BA3;
+      --success: #00D4A1;
+      --error: #FF4D6A;
+      --warning: #FFB020;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --sans: 'Inter', system-ui, sans-serif;
+      --radius: 20px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+    }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --base-blue: #0052FF;
-      --base-dark: #0A0A0F;
-      --surface: #13131A;
-      --surface-2: #1C1C27;
-      --border: #2A2A3D;
-      --text: #F0F0F8;
-      --text-muted: #7A7A9A;
-      --success: #00C896;
-      --error: #FF4D6A;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Inter', sans-serif;
-    }
-
-    html, body {
-      min-height: 100vh;
-      background: var(--base-dark);
-      color: var(--text);
-      font-family: var(--sans);
-    }
+    html { scroll-behavior: smooth; }
 
     body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px 80px;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      line-height: 1.5;
     }
 
+    /* Animated gradient mesh background */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 82, 255, 0.22), transparent 50%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(0, 212, 161, 0.08), transparent 45%),
+        radial-gradient(ellipse 70% 60% at 50% 90%, rgba(0, 82, 255, 0.12), transparent 50%),
+        radial-gradient(ellipse 40% 40% at 90% 80%, rgba(120, 80, 255, 0.08), transparent 40%);
+      animation: meshShift 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes meshShift {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.08) translate(-2%, 2%); }
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 20px 100px;
+    }
+
+    /* Header */
     header {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.7s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .logo {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 8px 16px 8px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
     }
 
     .logo-dot {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       background: var(--base-blue);
       border-radius: 50%;
+      box-shadow: 0 0 20px var(--base-blue-glow);
+      position: relative;
+    }
+
+    .logo-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid var(--base-blue);
+      opacity: 0.4;
+      animation: pulseRing 2.5s ease-out infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1.5); opacity: 0; }
     }
 
     .logo-text {
-      font-size: 22px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--base-blue);
+      background: rgba(0, 82, 255, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: 4px;
     }
 
     header h1 {
-      font-size: clamp(32px, 5vw, 52px);
-      font-weight: 700;
-      letter-spacing: -1.5px;
-      line-height: 1.1;
-      margin-bottom: 12px;
+      font-size: clamp(34px, 7vw, 52px);
+      font-weight: 800;
+      letter-spacing: -1.8px;
+      line-height: 1.08;
+      margin-bottom: 14px;
     }
 
-    header h1 span { color: var(--base-blue); }
+    header h1 span {
+      background: linear-gradient(135deg, #0052FF 0%, #4D8AFF 50%, #00D4A1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
     header p {
       color: var(--text-muted);
       font-size: 16px;
-      max-width: 400px;
+      max-width: 380px;
       margin: 0 auto;
     }
 
+    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 520px;
-      margin-bottom: 20px;
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      animation: fadeUp 0.7s ease-out both;
     }
+
+    .card:nth-child(2) { animation-delay: 0.08s; }
+    .card:nth-child(3) { animation-delay: 0.16s; }
+    .card:nth-child(4) { animation-delay: 0.24s; }
 
     .card-label {
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.4px;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
+    .card-label .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--base-blue);
+    }
+
+    /* Wallet */
     .wallet-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .wallet-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--text-muted);
       flex-shrink: 0;
-      transition: background 0.3s;
+      transition: background 0.3s, box-shadow 0.3s;
     }
 
-    .status-dot.connected { background: var(--success); }
+    .status-dot.connected {
+      background: var(--success);
+      box-shadow: 0 0 12px rgba(0, 212, 161, 0.5);
+    }
 
     .wallet-address {
       font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text-muted);
-      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
-    button {
+    .network-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 82, 255, 0.15);
+      color: #7BA3FF;
+      border: 1px solid rgba(0, 82, 255, 0.25);
+    }
+
+    .network-pill.wrong {
+      background: rgba(255, 77, 106, 0.12);
+      color: var(--error);
+      border-color: rgba(255, 77, 106, 0.3);
+    }
+
+    /* Buttons */
+    button, .btn {
       font-family: var(--sans);
       font-size: 14px;
       font-weight: 600;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    button:active { transform: scale(0.98); }
-    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     .btn-primary {
       background: var(--base-blue);
-      color: #fff;
-      padding: 12px 24px;
+      color: white;
+      padding: 12px 20px;
+      box-shadow: 0 4px 20px var(--base-blue-glow);
     }
 
-    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px var(--base-blue-glow);
+      filter: brightness(1.08);
+    }
 
-    .btn-secondary {
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
       background: var(--surface-2);
       color: var(--text);
-      border: 1px solid var(--border);
-      padding: 12px 24px;
+      border-color: var(--border-strong);
     }
 
-    .btn-secondary:hover:not(:disabled) { border-color: var(--base-blue); }
+    .btn-full {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 15px;
+    }
 
+    /* Message display */
     .message-box {
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      font-family: var(--mono);
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--text);
-      min-height: 64px;
-      word-break: break-word;
-      margin-bottom: 16px;
+      border-radius: 14px;
+      padding: 22px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
-    .message-box.empty { color: var(--text-muted); font-style: italic; }
+    .message-text {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .message-text.empty {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-style: italic;
+    }
+
+    .message-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    .message-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .message-meta .label {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    /* Stats row */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      font-family: var(--mono);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Input */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
 
     textarea {
       width: 100%;
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-family: var(--mono);
-      font-size: 14px;
+      border-radius: 14px;
+      padding: 16px;
       color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.5;
       resize: vertical;
-      min-height: 80px;
+      min-height: 100px;
       outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    textarea:focus { border-color: var(--base-blue); }
-    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus {
+      border-color: var(--base-blue);
+      box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.18);
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
 
     .char-count {
+      position: absolute;
+      bottom: 12px;
+      right: 14px;
       font-size: 12px;
-      color: var(--text-muted);
-      text-align: right;
-      margin-bottom: 12px;
       font-family: var(--mono);
+      color: var(--text-muted);
+      pointer-events: none;
     }
 
-    .char-count.over { color: var(--error); }
+    .char-count.over {
+      color: var(--error);
+    }
 
-    .actions { display: flex; gap: 10px; }
-    .actions .btn-primary { flex: 1; }
+    /* History */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
 
-    #toast {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--surface);
+    .history-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 4px;
+    }
+
+    .history-item {
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 22px;
+      border-radius: 12px;
+      padding: 14px 16px;
+      animation: fadeUp 0.4s ease-out;
+    }
+
+    .history-msg {
       font-size: 14px;
       font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 999;
-      white-space: nowrap;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      margin-bottom: 8px;
+      word-break: break-word;
     }
 
-    #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.success { border-color: var(--success); }
-    #toast.error { border-color: var(--error); }
-
-    .info-row {
+    .history-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      gap: 8px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Footer / contract link */
+    .footer {
+      text-align: center;
+      margin-top: 28px;
       font-size: 13px;
+      color: var(--text-muted);
+      animation: fadeUp 0.7s ease-out 0.3s both;
     }
 
-    .info-row:last-child { border-bottom: none; }
-    .info-key { color: var(--text-muted); }
-    .info-val { font-family: var(--mono); font-size: 12px; }
-    .info-val a { color: var(--base-blue); text-decoration: none; }
-    .info-val a:hover { text-decoration: underline; }
-
-    .network-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,82,255,0.12);
-      color: var(--base-blue);
-      border: 1px solid rgba(0,82,255,0.3);
-      border-radius: 20px;
-      padding: 4px 12px;
+    .footer a {
+      color: #7BA3FF;
+      text-decoration: none;
+      font-family: var(--mono);
       font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 32px;
     }
 
-    .network-badge .dot { width: 6px; height: 6px; background: var(--base-blue); border-radius: 50%; }
+    .footer a:hover {
+      text-decoration: underline;
+    }
 
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface-solid);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 14px 22px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+      max-width: 90vw;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.success { border-color: rgba(0, 212, 161, 0.4); }
+    #toast.error { border-color: rgba(255, 77, 106, 0.4); }
+
+    /* Spinner */
     .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: white;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Confetti canvas */
+    #confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .app { padding: 24px 16px 80px; }
+      .card { padding: 20px; }
+      .message-text { font-size: 18px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
+  <div class="bg-mesh"></div>
+  <div class="noise"></div>
+  <canvas id="confetti"></canvas>
 
-  <header>
-    <div class="logo">
-      <div class="logo-dot"></div>
-      <span class="logo-text">HelloBase</span>
-    </div>
-    <div class="network-badge">
-      <div class="dot"></div>
-      Base Sepolia Testnet
-    </div>
-    <h1>Store a message<br><span>on-chain.</span></h1>
-    <p>A simple dApp that reads and writes a message to the Base blockchain.</p>
-  </header>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span class="logo-text">HelloBase</span>
+        <span class="badge">Sepolia</span>
+      </div>
+      <h1>Leave your mark<br /><span>on Base</span></h1>
+      <p>A public on-chain message board. Write once, live forever on L2.</p>
+    </header>
 
-  <div class="card">
-    <div class="card-label">Wallet</div>
-    <div class="wallet-row">
-      <div class="status-dot" id="statusDot"></div>
-      <div class="wallet-address" id="walletAddress">Not connected</div>
-      <button class="btn-primary" id="connectBtn" onclick="connectWallet()">Connect</button>
+    <!-- Wallet -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> Wallet</div>
+      <div class="wallet-row">
+        <div class="wallet-info">
+          <div class="status-dot" id="statusDot"></div>
+          <div>
+            <div class="wallet-address" id="walletAddress">Not connected</div>
+            <div style="margin-top:4px">
+              <span class="network-pill" id="networkPill">—</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-label">Current Message On-Chain</div>
-    <div class="message-box empty" id="currentMessage">Connect your wallet to read the message.</div>
-    <button class="btn-secondary" id="readBtn" onclick="readMessage()" disabled>Read Message</button>
-  </div>
+    <!-- Current Message -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> Current Message</div>
+      <div class="message-box">
+        <div class="message-text empty" id="currentMessage">Connect wallet & read the board…</div>
+        <div class="message-meta" id="messageMeta" style="display:none">
+          <span><span class="label">by</span> <span id="lastUpdater">—</span></span>
+          <span><span class="label">updates</span> <span id="updateCount">0</span></span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="statUpdates">—</div>
+          <div class="stat-label">Total Updates</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statNetwork">Base</div>
+          <div class="stat-label">Network</div>
+        </div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn-ghost btn-full" id="readBtn" onclick="readBoard()" disabled>Refresh Board</button>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="card-label">Set New Message</div>
-    <textarea id="messageInput" placeholder="Type your message (max 280 characters)..." maxlength="280" oninput="updateCharCount()"></textarea>
-    <div class="char-count" id="charCount">0 / 280</div>
-    <div class="actions">
-      <button class="btn-primary" id="writeBtn" onclick="setMessage()" disabled>Save to Blockchain</button>
+    <!-- Write -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> Write a Message</div>
+      <div class="input-wrap">
+        <textarea id="messageInput" placeholder="What's on your mind? (max 280 chars)" maxlength="300" oninput="updateCharCount()" disabled></textarea>
+        <span class="char-count" id="charCount">0 / 280</span>
+      </div>
+      <button class="btn-primary btn-full" id="writeBtn" onclick="setMessage()" disabled>Save to Blockchain</button>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-label">Contract Info</div>
-    <div class="info-row">
-      <span class="info-key">Network</span>
-      <span class="info-val">Base Sepolia (Chain ID: 84532)</span>
+    <!-- History -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> Recent Activity</div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Connect & refresh to load on-chain history</div>
+      </div>
     </div>
-    <div class="info-row">
-      <span class="info-key">Contract Address</span>
-      <span class="info-val">
-        <a href="#" id="contractLink" target="_blank">— deploy first —</a>
-      </span>
-    </div>
-    <div class="info-row">
-      <span class="info-key">Solidity Version</span>
-      <span class="info-val">0.8.20</span>
+
+    <div class="footer">
+      Contract: <a id="contractLink" href="#" target="_blank" rel="noopener">—</a>
+      <br /><br />
+      Built for <strong style="color:var(--text)">Base</strong> · Powered by ethers.js
     </div>
   </div>
 
   <div id="toast"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.0/ethers.umd.min.js"></script>
   <script>
-    const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
-    const BASE_SEPOLIA_CHAIN_ID = "0x14A34";
+    // ═══════════════════════════════════════════════════
+    // CONFIG — replace after deploy
+    // ═══════════════════════════════════════════════════
+    const CONTRACT_ADDRESS = "0x91296937E87cE57fF3cDD787289576E505BdD3c9";
+    const BASE_SEPOLIA_CHAIN_ID = "0x14a34"; // 84532
+    const BASE_SEPOLIA_PARAMS = {
+      chainId: BASE_SEPOLIA_CHAIN_ID,
+      chainName: "Base Sepolia",
+      nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+      rpcUrls: ["https://sepolia.base.org"],
+      blockExplorerUrls: ["https://sepolia.basescan.org"]
+    };
 
     const ABI = [
-      "function getMessage() external view returns (string memory)",
-      "function setMessage(string calldata _newMessage) external",
-      "event MessageUpdated(address indexed sender, string newMessage)"
+      "function getMessage() view returns (string)",
+      "function setMessage(string calldata _newMessage)",
+      "function getBoardState() view returns (string currentMessage, address currentLastUpdater, uint256 totalUpdates)",
+      "function lastUpdater() view returns (address)",
+      "function updateCount() view returns (uint256)",
+      "function owner() view returns (address)",
+      "event MessageUpdated(address indexed sender, string newMessage, uint256 indexed updateId, uint256 timestamp)"
     ];
 
-    let provider, signer, contract;
+    let provider, signer, contract, userAddress;
 
-    async function connectWallet() {
-      if (!window.ethereum) {
-        showToast("❌ MetaMask not found. Please install it.", "error");
-        return;
-      }
-      try {
-        await switchToBaseSepolia();
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const address = accounts[0];
-        provider = new ethers.BrowserProvider(window.ethereum);
-        signer = await provider.getSigner();
-        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-        document.getElementById("walletAddress").textContent = address.slice(0, 6) + "..." + address.slice(-4);
-        document.getElementById("statusDot").classList.add("connected");
-        document.getElementById("connectBtn").textContent = "Connected";
-        document.getElementById("connectBtn").disabled = true;
-        document.getElementById("readBtn").disabled = false;
-        document.getElementById("writeBtn").disabled = false;
-        if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
-          updateContractLink();
-          await readMessage();
-        }
-        showToast("✅ Wallet connected!", "success");
-      } catch (err) {
-        showToast("❌ " + (err.message || "Connection failed"), "error");
-      }
+    // ─── Helpers ───────────────────────────────────────
+    function shortAddr(addr) {
+      if (!addr) return "—";
+      return addr.slice(0, 6) + "…" + addr.slice(-4);
     }
 
-    async function switchToBaseSepolia() {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: BASE_SEPOLIA_CHAIN_ID }],
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [{
-              chainId: BASE_SEPOLIA_CHAIN_ID,
-              chainName: "Base Sepolia Testnet",
-              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://sepolia.base.org"],
-              blockExplorerUrls: ["https://sepolia.basescan.org"],
-            }],
-          });
-        }
-      }
-    }
-
-    async function readMessage() {
-      if (!contract) return;
-      const btn = document.getElementById("readBtn");
-      btn.innerHTML = '<span class="spinner"></span>';
-      btn.disabled = true;
-      try {
-        const msg = await contract.getMessage();
-        const el = document.getElementById("currentMessage");
-        el.textContent = msg;
-        el.classList.remove("empty");
-      } catch (err) {
-        showToast("❌ Failed to read: " + err.message, "error");
-      } finally {
-        btn.textContent = "Read Message";
-        btn.disabled = false;
-      }
-    }
-
-    async function setMessage() {
-      if (!contract) return;
-      const input = document.getElementById("messageInput").value.trim();
-      if (!input) { showToast("⚠️ Message cannot be empty.", "error"); return; }
-      if (input.length > 280) { showToast("⚠️ Message too long.", "error"); return; }
-      const btn = document.getElementById("writeBtn");
-      btn.innerHTML = '<span class="spinner"></span> Submitting...';
-      btn.disabled = true;
-      try {
-        const tx = await contract.setMessage(input);
-        showToast("⏳ Transaction sent — waiting for confirmation...", "");
-        await tx.wait();
-        showToast("✅ Message saved on-chain!", "success");
-        document.getElementById("messageInput").value = "";
-        updateCharCount();
-        await readMessage();
-      } catch (err) {
-        const msg = err?.reason || err?.message || "Transaction failed";
-        showToast("❌ " + msg, "error");
-      } finally {
-        btn.textContent = "Save to Blockchain";
-        btn.disabled = false;
-      }
+    function showToast(message, type = "") {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.className = "show " + type;
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { el.className = ""; }, 4200);
     }
 
     function updateCharCount() {
@@ -442,24 +702,249 @@
       el.classList.toggle("over", len > 280);
     }
 
+    function setConnectedUI(connected) {
+      const dot = document.getElementById("statusDot");
+      const btn = document.getElementById("connectBtn");
+      const readBtn = document.getElementById("readBtn");
+      const writeBtn = document.getElementById("writeBtn");
+      const input = document.getElementById("messageInput");
+
+      if (connected) {
+        dot.classList.add("connected");
+        btn.textContent = "Connected";
+        btn.disabled = true;
+        readBtn.disabled = false;
+        writeBtn.disabled = false;
+        input.disabled = false;
+      } else {
+        dot.classList.remove("connected");
+        btn.textContent = "Connect Wallet";
+        btn.disabled = false;
+        readBtn.disabled = true;
+        writeBtn.disabled = true;
+        input.disabled = true;
+      }
+    }
+
+    // ─── Confetti ──────────────────────────────────────
+    function fireConfetti() {
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const pieces = [];
+      const colors = ["#0052FF", "#00D4A1", "#4D8AFF", "#FFFFFF", "#7BA3FF"];
+      for (let i = 0; i < 80; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 100,
+          w: 6 + Math.random() * 8,
+          h: 4 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 6,
+          vy: 2 + Math.random() * 4,
+          rot: Math.random() * Math.PI,
+          vr: (Math.random() - 0.5) * 0.2
+        });
+      }
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.08;
+          p.rot += p.vr;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 120) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    }
+
+    // ─── Wallet ────────────────────────────────────────
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showToast("Please install MetaMask or another Web3 wallet", "error");
+        return;
+      }
+      try {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        userAddress = accounts[0];
+        signer = await provider.getSigner();
+
+        const network = await provider.getNetwork();
+        const chainIdHex = "0x" + network.chainId.toString(16);
+
+        const pill = document.getElementById("networkPill");
+        if (network.chainId !== 84532n) {
+          pill.textContent = "Wrong network";
+          pill.classList.add("wrong");
+          showToast("Switching to Base Sepolia…");
+          try {
+            await window.ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: BASE_SEPOLIA_CHAIN_ID }]
+            });
+          } catch (switchErr) {
+            if (switchErr.code === 4902) {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [BASE_SEPOLIA_PARAMS]
+              });
+            } else {
+              throw switchErr;
+            }
+          }
+          // re-fetch after switch
+          provider = new ethers.BrowserProvider(window.ethereum);
+          signer = await provider.getSigner();
+          pill.textContent = "Base Sepolia";
+          pill.classList.remove("wrong");
+        } else {
+          pill.textContent = "Base Sepolia";
+          pill.classList.remove("wrong");
+        }
+
+        document.getElementById("walletAddress").textContent = shortAddr(userAddress);
+        setConnectedUI(true);
+
+        if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
+          contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+          updateContractLink();
+          await readBoard();
+          await loadHistory();
+        } else {
+          showToast("⚠️ Set CONTRACT_ADDRESS in the code after deploy", "error");
+        }
+
+        // Listen for account / chain changes
+        window.ethereum.on("accountsChanged", () => window.location.reload());
+        window.ethereum.on("chainChanged", () => window.location.reload());
+      } catch (err) {
+        console.error(err);
+        showToast(err?.message || "Connection failed", "error");
+      }
+    }
+
     function updateContractLink() {
       const link = document.getElementById("contractLink");
-      link.textContent = CONTRACT_ADDRESS.slice(0, 6) + "..." + CONTRACT_ADDRESS.slice(-4);
+      link.textContent = shortAddr(CONTRACT_ADDRESS);
       link.href = `https://sepolia.basescan.org/address/${CONTRACT_ADDRESS}`;
     }
 
-    let toastTimer;
-    function showToast(message, type) {
-      const el = document.getElementById("toast");
-      el.textContent = message;
-      el.className = `show ${type}`;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { el.className = ""; }, 4000);
+    // ─── Board ─────────────────────────────────────────
+    async function readBoard() {
+      if (!contract) return;
+      const btn = document.getElementById("readBtn");
+      btn.innerHTML = '<span class="spinner"></span> Reading…';
+      btn.disabled = true;
+      try {
+        const [msg, updater, count] = await contract.getBoardState();
+        const el = document.getElementById("currentMessage");
+        el.textContent = msg || "(empty)";
+        el.classList.toggle("empty", !msg);
+
+        document.getElementById("messageMeta").style.display = "flex";
+        document.getElementById("lastUpdater").textContent = shortAddr(updater);
+        document.getElementById("updateCount").textContent = count.toString();
+        document.getElementById("statUpdates").textContent = count.toString();
+      } catch (err) {
+        showToast("Failed to read: " + (err?.reason || err.message), "error");
+      } finally {
+        btn.textContent = "Refresh Board";
+        btn.disabled = false;
+      }
     }
 
-    if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") updateContractLink();
-  </script>
+    async function setMessage() {
+      if (!contract) return;
+      const input = document.getElementById("messageInput").value.trim();
+      if (!input) {
+        showToast("Message cannot be empty", "error");
+        return;
+      }
+      if (input.length > 280) {
+        showToast("Message too long (max 280)", "error");
+        return;
+      }
+      const btn = document.getElementById("writeBtn");
+      btn.innerHTML = '<span class="spinner"></span> Confirm in wallet…';
+      btn.disabled = true;
+      try {
+        const tx = await contract.setMessage(input);
+        showToast("⏳ Transaction submitted — waiting for confirmation…");
+        btn.innerHTML = '<span class="spinner"></span> Confirming…';
+        await tx.wait();
+        showToast("✅ Message saved on-chain forever!", "success");
+        fireConfetti();
+        document.getElementById("messageInput").value = "";
+        updateCharCount();
+        await readBoard();
+        await loadHistory();
+      } catch (err) {
+        const msg = err?.reason || err?.shortMessage || err?.message || "Transaction failed";
+        showToast("❌ " + msg, "error");
+      } finally {
+        btn.textContent = "Save to Blockchain";
+        btn.disabled = false;
+      }
+    }
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    async function loadHistory() {
+      if (!contract || !provider) return;
+      const list = document.getElementById("historyList");
+      try {
+        // Query last ~2000 blocks for events (adjust if needed)
+        const currentBlock = await provider.getBlockNumber();
+        const fromBlock = Math.max(0, currentBlock - 5000);
+        const filter = contract.filters.MessageUpdated();
+        const events = await contract.queryFilter(filter, fromBlock, "latest");
+        const recent = events.slice(-12).reverse();
+
+        if (recent.length === 0) {
+          list.innerHTML = '<div class="history-empty">No recent activity found in last blocks</div>';
+          return;
+        }
+
+        list.innerHTML = recent.map(ev => {
+          const { sender, newMessage, updateId, timestamp } = ev.args;
+          const time = timestamp ? new Date(Number(timestamp) * 1000).toLocaleString() : "—";
+          return `
+            <div class="history-item">
+              <div class="history-msg">${escapeHtml(newMessage)}</div>
+              <div class="history-meta">
+                <span>${shortAddr(sender)} · #${updateId}</span>
+                <span>${time}</span>
+              </div>
+            </div>`;
+        }).join("");
+      } catch (err) {
+        console.warn("History load failed:", err);
+        list.innerHTML = '<div class="history-empty">Could not load history (RPC limits)</div>';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // Init contract link if already set
+    if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
+      updateContractLink();
+    }
+  </script>
 </body>
 </html>

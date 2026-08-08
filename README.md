@@ -1,66 +1,77 @@
-# HelloBase dApp 🔵
+# HelloBase 🔵 — On-Chain Message Board
 
-A simple Hello World dApp deployed on the **Base network**. Store and retrieve a message on-chain via a clean frontend connected to MetaMask.
+A polished public message board dApp on **Base Sepolia**. Anyone can read the current message and leave their own (max 280 chars). Messages live forever on L2.
+
+**Features**
+- Beautiful glassmorphism UI with animated Base-blue gradients
+- Real-time board state (message + last updater + total updates)
+- On-chain event history feed
+- Auto network switch / add Base Sepolia
+- Confetti celebration on successful write
+- One-call `getBoardState()` for efficient reads
+- Fully tested Hardhat project + Basescan verification ready
+
+---
 
 ## Project Structure
 
 ```
 hello-base-dapp/
-├── contracts/
-│   └── HelloBase.sol       # Solidity smart contract
-├── scripts/
-│   └── deploy.js           # Hardhat deploy script
-├── test/
-│   └── HelloBase.test.js   # Contract unit tests
-├── frontend/
-│   └── index.html          # Browser dApp (no build step needed)
-├── hardhat.config.js       # Hardhat + Base network config
+├── contracts/HelloBase.sol   # Solidity contract
+├── scripts/deploy.js         # Deploy script
+├── test/HelloBase.test.js    # Unit tests
+├── frontend/index.html       # Single-file dApp (no build step)
+├── hardhat.config.js
 ├── package.json
 ├── .env.example
-└── .gitignore
+└── README.md
 ```
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Install
 
 ```bash
 npm install
 ```
 
-### 2. Set up environment variables
+### 2. Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and fill in:
-- `PRIVATE_KEY` — your wallet's private key (never commit this!)
-- `BASESCAN_API_KEY` — from [basescan.org](https://basescan.org/myapikey) (for contract verification)
+Edit `.env`:
 
-### 3. Compile the contract
+```
+PRIVATE_KEY=your_wallet_private_key_without_0x
+BASESCAN_API_KEY=optional_for_verification
+```
+
+> Never commit `.env`. The private key must have Base Sepolia ETH.
+
+### 3. Compile & Test
 
 ```bash
 npx hardhat compile
-```
-
-### 4. Run tests
-
-```bash
 npx hardhat test
 ```
 
-### 5. Deploy to Base Sepolia Testnet
+### 4. Get free testnet ETH
 
-> First, get free testnet ETH from the [Base Sepolia Faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet)
+- [Coinbase Base Sepolia Faucet](https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet)
+- [QuickNode Faucet](https://faucet.quicknode.com/base/sepolia)
+- [Alchemy Faucet](https://www.alchemy.com/faucets/base-sepolia)
+
+### 5. Deploy to Base Sepolia
 
 ```bash
 npm run deploy:testnet
 ```
 
-Copy the deployed contract address from the output.
+Copy the printed contract address.
 
-### 6. Update the frontend
+### 6. Wire the frontend
 
 Open `frontend/index.html` and replace:
 
@@ -70,47 +81,52 @@ const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
 
 with your deployed address.
 
-### 7. Open the frontend
+### 7. Use it
 
-Simply open `frontend/index.html` in your browser — no server required.
+Open `frontend/index.html` in a browser (or serve it with any static server).
+
+1. Click **Connect Wallet**
+2. Approve MetaMask → it will switch/add Base Sepolia automatically
+3. Read the board, write a message, watch the history update
 
 ---
 
-## Deploying to Base Mainnet
+## Contract API
 
-When you're ready for production:
+| Function / Event | Description |
+|---|---|
+| `getMessage()` | Current message string |
+| `setMessage(string)` | Update message (1–280 chars) |
+| `getBoardState()` | Returns `(message, lastUpdater, updateCount)` |
+| `lastUpdater()` | Address of last writer |
+| `updateCount()` | Total number of updates |
+| `MessageUpdated(sender, newMessage, updateId, timestamp)` | Emitted on every write |
+
+---
+
+## Deploy to Base Mainnet
+
+When ready:
 
 ```bash
 npm run deploy:mainnet
 ```
 
-Update `frontend/index.html`:
-- Change `CONTRACT_ADDRESS` to your mainnet address
-- Change the network badge text to `Base Mainnet`
-- Change `BASE_SEPOLIA_CHAIN_ID` to `"0x2105"` (8453 in hex)
-- Update Basescan links from `sepolia.basescan.org` to `basescan.org`
+Then update the frontend:
+- `CONTRACT_ADDRESS`
+- Chain ID → `"0x2105"` (8453)
+- Explorer links → `basescan.org`
+- Badge text → Mainnet
 
 ---
 
-## Contract
+## Tech
 
-**HelloBase.sol** — stores a single string message on-chain. Anyone can read it; anyone can update it.
-
-| Function | Description |
-|---|---|
-| `getMessage()` | Returns the current stored message |
-| `setMessage(string)` | Updates the message (max 280 chars) |
-
-**Event:** `MessageUpdated(address sender, string newMessage)` — emitted on every update.
+- Solidity 0.8.20
+- Hardhat + hardhat-toolbox
+- ethers.js v6 (CDN, no frontend build)
+- Base Sepolia (chainId 84532)
 
 ---
 
-## Tech Stack
-
-| Layer | Tool |
-|---|---|
-| Smart Contract | Solidity 0.8.20 |
-| Development | Hardhat |
-| Network | Base (L2 on Ethereum) |
-| Frontend | Vanilla HTML/JS + ethers.js v6 |
-| Wallet | MetaMask |
+Made for Base. Leave your mark 🔵
