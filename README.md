@@ -2,6 +2,10 @@
 
 A polished public message board dApp on **Base Sepolia**. Anyone can read the current message and leave their own (max 280 chars). Messages live forever on L2.
 
+**Live**
+- 🔵 **App:** [danialzz.github.io/hello-base-dapp](https://danialzz.github.io/hello-base-dapp/)
+- 🔎 **Contract on BaseScan:** [sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9](https://sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9)
+
 **Features**
 - Beautiful glassmorphism UI with animated Base-blue gradients
 - Real-time board state (message + last updater + total updates)
