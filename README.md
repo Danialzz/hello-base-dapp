@@ -1,6 +1,6 @@
 # HelloBase 🔵 — Leave Your Mark on Base
 
-A premium public on-chain message board on **Base Sepolia**. Connect your wallet, write up to 280 characters, and your message lives on the chain forever. Anyone can read the board, every write is recorded in the event history.
+A premium public on-chain message board on **Base Sepolia**. Anyone can read the board instantly — no wallet needed — and connect a wallet to write up to 280 characters. Your message lives on the chain forever and every write is recorded in the event history.
 
 Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow — rather than a typical demo dApp.
 
@@ -23,11 +23,13 @@ Suggested topics: `base`, `base-sepolia`, `dapp`, `web3`, `solidity`, `ethereum`
 - **Polished, product-grade UI** — refined dark glassmorphism with a Base-blue accent, gradient mesh + noise texture, ambient glows and a subtle dot grid
 - **Design system** — Space Grotesk display type, Inter body, JetBrains Mono for on-chain data; generous spacing, layered shadows and micro-interactions throughout
 - **Hero message display** — the current message is the focal point of the page, styled as a large quote panel with live board stats
+- **View-only mode** — the board and recent history load instantly through a public Base Sepolia RPC; no wallet needed to read
 - **Real-time board state** — message + last writer + total updates via one `getBoardState()` call
 - **On-chain history feed** — latest 12 events with relative timestamps, update IDs, copyable address badges and a per-transaction BaseScan link
 - **Skeleton loaders** — structured shimmer placeholders for the board and history instead of plain spinners
 - **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically; declines are handled gracefully
 - **Multi-wallet connect** — a polished wallet-selector modal (MetaMask, Coinbase Wallet, Rabby, Brave, browser fallback) with install detection and an "Install ↗" state for missing wallets
+- **Wallet disconnect** — an account menu on the address button lets you copy your address or disconnect cleanly, falling back to view-only mode
 - **Product-grade footer** — branded footer with gradient hairline, contract address (copy + BaseScan link) and network status
 - **Clear transaction states** — step-by-step status line ("approve in wallet" → "confirming on Base") plus a pulsing button glow while a write is pending
 - **Refined confetti** — a calm, eased burst on successful writes, plus a subtle glow flash on the hero message (respects `prefers-reduced-motion`)
@@ -136,10 +138,11 @@ with your deployed address.
 
 Open `frontend/index.html` in a browser (or serve it with any static server).
 
-1. Click **Connect Wallet**
-2. Approve MetaMask → it will switch / add Base Sepolia automatically
-3. Read the board, write a message, watch the history update
-4. Click any address to copy it
+1. **Read without connecting** — the board and recent history load instantly in view-only mode
+2. Click **Connect Wallet** and pick a wallet from the selector (MetaMask, Coinbase Wallet, Rabby, Brave, or your browser wallet)
+3. Approve the connection → it will switch / add Base Sepolia automatically
+4. Write a message, watch the board and history update
+5. Click any address to copy it; use the menu on your address button to disconnect
 
 ---
 

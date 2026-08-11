@@ -214,6 +214,34 @@
     .btn-addr:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
     .btn-addr.copied { border-color: var(--success); color: var(--success); }
 
+    .account-wrap { position: relative; }
+    .account-wrap .btn-caret { transition: transform 0.22s var(--ease); }
+    .account-wrap.open .btn-caret { transform: rotate(180deg); }
+    .account-menu {
+      position: absolute; top: calc(100% + 10px); right: 0; z-index: 80;
+      min-width: 216px;
+      background:
+        radial-gradient(120% 90% at 100% 0%, rgba(0, 82, 255, 0.12), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02) 55%),
+        var(--surface-solid);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card), 0 28px 70px -24px rgba(0,0,0,0.85);
+      padding: 6px;
+      animation: fadeDown 0.22s var(--ease);
+    }
+    .account-item {
+      width: 100%; min-height: 0;
+      justify-content: flex-start; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      background: transparent; color: var(--text-muted);
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+    }
+    .account-item:hover { background: var(--surface-2); color: var(--text); }
+    .account-item.danger { color: #FF8FA2; }
+    .account-item.danger:hover { background: rgba(255, 92, 122, 0.12); color: #FFB3C1; }
+    .account-item svg { flex-shrink: 0; }
+
     .dot {
       width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0;
       transition: background 0.3s, box-shadow 0.3s;
@@ -795,7 +823,19 @@
     </div>
     <div class="topbar-right">
       <span class="network-pill" id="networkPill" aria-live="polite"><span class="pill-dot"></span><span id="networkPillText">Not connected</span></span>
-      <button class="btn-primary" id="connectBtn" type="button">Connect Wallet</button>
+      <div class="account-wrap" id="accountWrap">
+        <button class="btn-primary" id="connectBtn" type="button">Connect Wallet</button>
+        <div class="account-menu" id="accountMenu" role="menu" aria-label="Account options" hidden>
+          <button class="account-item" type="button" data-action="copy" role="menuitem">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy address</span>
+          </button>
+          <button class="account-item danger" type="button" data-action="disconnect" role="menuitem">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+            <span>Disconnect</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -803,7 +843,7 @@
     <section class="hero">
       <p class="hero-eyebrow">An on-chain message board</p>
       <h1 class="hero-title">Leave your mark <span>on Base</span></h1>
-      <p class="hero-sub">Connect your wallet, write up to 280 characters, and your message becomes part of the chain — public and permanent.</p>
+      <p class="hero-sub">Read the board instantly — no wallet needed. Connect to write up to 280 characters, and your message becomes part of the chain — public and permanent.</p>
       <div class="hero-badges">
         <span class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>No signup</span>
         <span class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>280 characters</span>
@@ -823,7 +863,7 @@
 
         <div id="board">
           <p class="board-quote" aria-hidden="true">&ldquo;</p>
-          <p class="board-message empty" id="currentMessage">Connect your wallet to read the board</p>
+          <p class="board-message empty" id="currentMessage">Loading the board…</p>
           <div class="board-meta" id="boardMeta" hidden>
             <button class="addr-chip" id="updaterChip" type="button" title="Copy address" data-full="">
               <span class="chip-dot"></span>
@@ -863,7 +903,7 @@
       <div class="side">
         <article class="card">
           <div class="card-label"><span class="card-dot"></span> Write a message</div>
-          <p class="write-hint">Every message is public and permanent on the chain. Pick your words — they’ll outlive this page.</p>
+          <p class="write-hint" id="writeHint">Connect a wallet to leave your mark. Every message is public and permanent on the chain.</p>
           <div class="input-wrap">
             <textarea id="messageInput" maxlength="300" placeholder="What’s on your mind?" disabled></textarea>
             <span class="char-count" id="charCount">0 / 280</span>
@@ -880,8 +920,8 @@
           <div class="history-list" id="historyList" aria-live="polite">
             <div class="history-empty">
               <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-              <p><strong>No activity yet</strong></p>
-              <span>Connect your wallet and refresh to load the latest on-chain updates.</span>
+              <p><strong>No messages yet</strong></p>
+              <span>Be the first to leave your mark on Base.</span>
             </div>
           </div>
         </article>
@@ -924,13 +964,13 @@
       <div class="modal-head">
         <div>
           <h2 id="walletModalTitle">Connect a wallet</h2>
-          <p>Choose a wallet to read and write to the board.</p>
+          <p>Choose a wallet to leave your mark on the board.</p>
         </div>
         <button class="modal-close" id="walletClose" type="button" aria-label="Close wallet options">×</button>
       </div>
       <div class="wallet-list" id="walletList"></div>
       <p class="wallet-note" id="walletNote" hidden>No wallet detected yet — install one below to connect.</p>
-      <p class="modal-foot">Connecting is free. Your messages are stored publicly on-chain.</p>
+      <p class="modal-foot">Connecting is free. Your messages are stored publicly and permanently on-chain.</p>
     </div>
   </div>
 
@@ -943,11 +983,12 @@
     // ═══════════════════════════════════════════════════
     const CONTRACT_ADDRESS = "0x91296937E87cE57fF3cDD787289576E505BdD3c9";
     const BASE_SEPOLIA_CHAIN_ID = "0x14a34"; // 84532
+    const BASE_SEPOLIA_RPC = "https://sepolia.base.org";
     const BASE_SEPOLIA_PARAMS = {
       chainId: BASE_SEPOLIA_CHAIN_ID,
       chainName: "Base Sepolia",
       nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-      rpcUrls: ["https://sepolia.base.org"],
+      rpcUrls: [BASE_SEPOLIA_RPC],
       blockExplorerUrls: ["https://sepolia.basescan.org"]
     };
 
@@ -962,6 +1003,7 @@
     ];
 
     let provider, signer, contract, userAddress;
+    let readProvider = null, readContract = null;
     let _lastUpdater = "";
 
     // Static icons
@@ -986,7 +1028,7 @@
     }
 
     function timeAgo(ms) {
-      const diff = Date.now() - ms;
+      const diff = Math.max(0, Date.now() - ms);
       const s = Math.floor(diff / 1000);
       if (s < 60) return "just now";
       const m = Math.floor(s / 60);
@@ -1067,6 +1109,7 @@
       const readBtn = document.getElementById("readBtn");
       const writeBtn = document.getElementById("writeBtn");
       const input = document.getElementById("messageInput");
+      const hint = document.getElementById("writeHint");
 
       if (connected) {
         btn.disabled = false;
@@ -1074,22 +1117,28 @@
         btn.innerHTML =
           '<span class="dot is-on" aria-hidden="true"></span>' +
           '<span>' + shortAddr(userAddress) + "</span>" +
-          ICON.copy +
-          '<span class="sr-only">Copy wallet address</span>';
-        btn.onclick = () => copyWallet();
-        btn.title = "Copy wallet address";
+          '<svg class="btn-caret" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+          '<span class="sr-only">Account options</span>';
+        btn.onclick = toggleAccountMenu;
+        btn.title = "Account options";
+        btn.setAttribute("aria-haspopup", "menu");
+        btn.setAttribute("aria-expanded", "false");
         readBtn.disabled = false;
         writeBtn.disabled = false;
         input.disabled = false;
+        hint.textContent = "Every message is public and permanent on the chain. Pick your words — they’ll outlive this page.";
       } else {
         btn.disabled = false;
         btn.className = "btn-primary";
         btn.innerHTML = ICON.wallet + '<span>Connect Wallet</span>';
         btn.onclick = openWalletModal;
         btn.removeAttribute("title");
-        readBtn.disabled = true;
+        btn.removeAttribute("aria-haspopup");
+        btn.removeAttribute("aria-expanded");
+        readBtn.disabled = false;
         writeBtn.disabled = true;
         input.disabled = true;
+        hint.textContent = "Connect a wallet to leave your mark. Every message is public and permanent on the chain.";
       }
     }
 
@@ -1101,8 +1150,62 @@
       });
     }
 
-    function copyWallet() {
-      copyAddressTo(document.getElementById("connectBtn"), userAddress, "Wallet address copied");
+    function openAccountMenu() {
+      const menu = document.getElementById("accountMenu");
+      const wrap = document.getElementById("accountWrap");
+      const btn = document.getElementById("connectBtn");
+      menu.hidden = false;
+      wrap.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      document.addEventListener("click", onAccountMenuOutside);
+      document.addEventListener("keydown", onAccountMenuKeydown);
+      const first = menu.querySelector(".account-item");
+      if (first && document.activeElement !== btn) first.focus();
+    }
+
+    function closeAccountMenu() {
+      const menu = document.getElementById("accountMenu");
+      if (menu.hidden) return;
+      menu.hidden = true;
+      document.getElementById("accountWrap").classList.remove("open");
+      document.getElementById("connectBtn").setAttribute("aria-expanded", "false");
+      document.removeEventListener("click", onAccountMenuOutside);
+      document.removeEventListener("keydown", onAccountMenuKeydown);
+    }
+
+    function toggleAccountMenu() {
+      const menu = document.getElementById("accountMenu");
+      if (menu.hidden) openAccountMenu(); else closeAccountMenu();
+    }
+
+    function onAccountMenuOutside(e) {
+      const wrap = document.getElementById("accountWrap");
+      if (wrap && !wrap.contains(e.target)) closeAccountMenu();
+    }
+
+    function onAccountMenuKeydown(e) {
+      if (e.key === "Escape") { e.preventDefault(); closeAccountMenu(); }
+    }
+
+    function onAccountMenuClick(e) {
+      const item = e.target.closest(".account-item");
+      if (!item) return;
+      if (item.dataset.action === "copy") {
+        copyAddressTo(document.getElementById("connectBtn"), userAddress, "Wallet address copied");
+      } else if (item.dataset.action === "disconnect") {
+        disconnectWallet();
+      }
+      closeAccountMenu();
+    }
+
+    function disconnectWallet() {
+      userAddress = null;
+      signer = null;
+      provider = readProvider;
+      contract = readContract;
+      setNetworkPill("Base Sepolia", false);
+      setConnectedUI(false);
+      showToast("Disconnected — you’re still viewing the board", "info");
     }
 
     function copyUpdater(btn) {
@@ -1375,6 +1478,10 @@
       } catch (err) {
         console.error(err);
         showToast(err?.friendly ? err.message : friendlyError(err, "Connection failed"), "error");
+        userAddress = null;
+        signer = null;
+        provider = readProvider;
+        contract = readContract;
         setConnectedUI(false);
       } finally {
         if (!userAddress) {
@@ -1525,7 +1632,7 @@
             '<div class="history-empty">' +
             '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>' +
             "<p><strong>No recent activity</strong></p>" +
-            "<span>No messages in the last few thousand blocks. Refresh to check again.</span>" +
+            "<span>No messages in the last few thousand blocks yet. Be the first to leave your mark — or refresh to check again.</span>" +
             "</div>";
           return;
         }
@@ -1568,6 +1675,28 @@
     }
 
     // ─── Init ──────────────────────────────────────────
+    async function initReadOnly() {
+      if (CONTRACT_ADDRESS === "YOUR_CONTRACT_ADDRESS_HERE") {
+        showToast("Set CONTRACT_ADDRESS in the code after deploy", "error");
+        return;
+      }
+      setNetworkPill("Base Sepolia", false);
+      try {
+        readProvider = new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+        readContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, readProvider);
+        provider = readProvider;
+        contract = readContract;
+        await readBoard();
+        await loadHistory();
+      } catch (err) {
+        console.warn("Read-only load failed:", err);
+        document.getElementById("currentMessage").textContent = "Couldn’t load the board. Try again.";
+        document.getElementById("currentMessage").classList.add("empty");
+        document.getElementById("boardSkeleton").hidden = true;
+        document.getElementById("board").hidden = false;
+      }
+    }
+
     function init() {
       captureButtonState();
       document.getElementById("connectBtn").onclick = openWalletModal;
@@ -1576,6 +1705,7 @@
       document.getElementById("walletOverlay").addEventListener("click", e => {
         if (e.target.id === "walletOverlay") closeWalletModal();
       });
+      document.getElementById("accountMenu").addEventListener("click", onAccountMenuClick);
       document.getElementById("contractChip").addEventListener("click", () =>
         copyAddressTo(document.getElementById("contractChip"), CONTRACT_ADDRESS, "Contract address copied")
       );
@@ -1588,6 +1718,7 @@
       if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
         updateContractLink();
       }
+      initReadOnly();
     }
     init();
   </script>
