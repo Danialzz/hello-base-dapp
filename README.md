@@ -1,19 +1,30 @@
-# HelloBase 🔵 — On-Chain Message Board
+# HelloBase 🔵 — Leave Your Mark on Base
 
-A polished public message board dApp on **Base Sepolia**. Anyone can read the current message and leave their own (max 280 chars). Messages live forever on L2.
+A premium public on-chain message board on **Base Sepolia**. Connect your wallet, write up to 280 characters, and your message lives on the chain forever. Anyone can read the board, every write is recorded in the event history.
+
+Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow — rather than a typical demo dApp.
 
 **Live**
 - 🔵 **App:** [danialzz.github.io/hello-base-dapp](https://danialzz.github.io/hello-base-dapp/)
 - 🔎 **Contract on BaseScan:** [sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9](https://sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9)
 
-**Features**
-- Beautiful glassmorphism UI with animated Base-blue gradients
-- Real-time board state (message + last updater + total updates)
-- On-chain event history feed
-- Auto network switch / add Base Sepolia
-- Confetti celebration on successful write
-- One-call `getBoardState()` for efficient reads
-- Fully tested Hardhat project + Basescan verification ready
+---
+
+## Features
+
+- **Polished, product-grade UI** — refined dark glassmorphism with a Base-blue accent, gradient mesh + noise texture, ambient glows and a subtle dot grid
+- **Design system** — Space Grotesk display type, Inter body, JetBrains Mono for on-chain data; generous spacing, layered shadows and micro-interactions throughout
+- **Hero message display** — the current message is the focal point of the page, styled as a large quote panel with live board stats
+- **Real-time board state** — message + last writer + total updates via one `getBoardState()` call
+- **On-chain history feed** — last 12 events with relative timestamps, update IDs and copy-to-clipboard address badges
+- **Skeleton loaders** — shimmer placeholders for the board and history instead of plain spinners
+- **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically
+- **Refined confetti** — a calm, eased burst on successful writes (respects `prefers-reduced-motion`)
+- **Copy-to-clipboard** on every truncated address
+- **Live network status pill** in the header
+- **Branding & social** — custom SVG logo, favicon set (`.ico` + SVG + apple-touch-icon + webmanifest), Open Graph and Twitter Card tags
+- **Accessibility basics** — visible focus states, `aria` labels, semantic landmarks, keyboard-friendly
+- **Fully tested Hardhat project** + Basescan verification ready
 
 ---
 
@@ -24,12 +35,20 @@ hello-base-dapp/
 ├── contracts/HelloBase.sol   # Solidity contract
 ├── scripts/deploy.js         # Deploy script
 ├── test/HelloBase.test.js    # Unit tests
-├── frontend/index.html       # Single-file dApp (no build step)
+├── frontend/                 # dApp source (single-file, no build step)
+│   ├── index.html            # The entire dApp — HTML, CSS & JS
+│   └── assets/               # Logo, favicons, webmanifest, OG image
+├── docs/                     # GitHub Pages build of the frontend
+│   └── index.html + assets/  # (mirror of frontend/)
 ├── hardhat.config.js
 ├── package.json
 ├── .env.example
 └── README.md
 ```
+
+> **Keeping `docs/` in sync:** `docs/` is what GitHub Pages serves. After editing `frontend/`, copy the changed files into `docs/` (`index.html` and any assets).
+
+---
 
 ## Quick Start
 
@@ -90,8 +109,9 @@ with your deployed address.
 Open `frontend/index.html` in a browser (or serve it with any static server).
 
 1. Click **Connect Wallet**
-2. Approve MetaMask → it will switch/add Base Sepolia automatically
+2. Approve MetaMask → it will switch / add Base Sepolia automatically
 3. Read the board, write a message, watch the history update
+4. Click any address to copy it
 
 ---
 
@@ -120,7 +140,7 @@ Then update the frontend:
 - `CONTRACT_ADDRESS`
 - Chain ID → `"0x2105"` (8453)
 - Explorer links → `basescan.org`
-- Badge text → Mainnet
+- Network pill / badge text → Mainnet
 
 ---
 
@@ -130,6 +150,7 @@ Then update the frontend:
 - Hardhat + hardhat-toolbox
 - ethers.js v6 (CDN, no frontend build)
 - Base Sepolia (chainId 84532)
+- Fonts: [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk), [Inter](https://fonts.google.com/specimen/Inter), [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
 
 ---
 

@@ -3,33 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HelloBase — On-Chain Message Board on Base</title>
-  <meta name="description" content="Leave your message on Base L2. A beautiful public on-chain guestbook." />
+  <title>HelloBase — Leave Your Mark on Base</title>
+  <meta name="description" content="HelloBase is a public on-chain message board on Base. Connect your wallet, write up to 280 characters, and your message lives on-chain forever." />
+  <meta name="author" content="HelloBase" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0052FF" />
+
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="assets/site.webmanifest" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://danialzz.github.io/hello-base-dapp/" />
+  <meta property="og:site_name" content="HelloBase" />
+  <meta property="og:title" content="HelloBase — Leave Your Mark on Base" />
+  <meta property="og:description" content="A public on-chain message board on Base. Connect your wallet, write up to 280 characters, and your message lives forever on L2." />
+  <meta property="og:image" content="https://danialzz.github.io/hello-base-dapp/assets/og-image.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HelloBase — Leave Your Mark on Base" />
+  <meta name="twitter:description" content="A public on-chain message board on Base. Your message lives forever on L2." />
+  <meta name="twitter:image" content="https://danialzz.github.io/hello-base-dapp/assets/og-image.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <style>
     :root {
       --base-blue: #0052FF;
-      --base-blue-glow: rgba(0, 82, 255, 0.45);
-      --bg: #05050A;
-      --surface: rgba(18, 18, 28, 0.75);
-      --surface-solid: #12121C;
-      --surface-2: #1A1A28;
+      --base-blue-2: #3B76FF;
+      --base-blue-soft: #7BA3FF;
+      --mint: #00D4A1;
+      --bg: #05060B;
+      --surface: rgba(255, 255, 255, 0.03);
+      --surface-2: rgba(255, 255, 255, 0.05);
+      --surface-solid: #0D111A;
       --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(255, 255, 255, 0.14);
-      --text: #F4F4F8;
-      --text-muted: #8B8BA3;
-      --success: #00D4A1;
-      --error: #FF4D6A;
-      --warning: #FFB020;
-      --mono: 'JetBrains Mono', ui-monospace, monospace;
-      --sans: 'Inter', system-ui, sans-serif;
-      --radius: 20px;
-      --shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --text: #F5F7FB;
+      --text-muted: #9AA3B5;
+      --text-dim: #67718A;
+      --success: #2BD9A8;
+      --error: #FF5C7A;
+      --warning: #FFB454;
+      --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 24px 60px -24px rgba(0,0,0,0.6);
+      --shadow-hover: 0 1px 0 rgba(255,255,255,0.06) inset, 0 32px 80px -28px rgba(0,0,0,0.75);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     html { scroll-behavior: smooth; }
 
@@ -37,622 +68,623 @@
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font-family: var(--sans);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
       overflow-x: hidden;
-      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Animated gradient mesh background */
+    :focus-visible {
+      outline: 2px solid var(--base-blue-soft);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    ::selection { background: rgba(0, 82, 255, 0.35); color: #fff; }
+
+    /* ── Background layers ─────────────────────────── */
     .bg-mesh {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 82, 255, 0.22), transparent 50%),
-        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(0, 212, 161, 0.08), transparent 45%),
-        radial-gradient(ellipse 70% 60% at 50% 90%, rgba(0, 82, 255, 0.12), transparent 50%),
-        radial-gradient(ellipse 40% 40% at 90% 80%, rgba(120, 80, 255, 0.08), transparent 40%);
-      animation: meshShift 18s ease-in-out infinite alternate;
+        radial-gradient(ellipse 70% 55% at 18% -5%, rgba(0, 82, 255, 0.20), transparent 52%),
+        radial-gradient(ellipse 55% 45% at 85% 12%, rgba(123, 163, 255, 0.10), transparent 48%),
+        radial-gradient(ellipse 65% 55% at 50% 105%, rgba(0, 82, 255, 0.12), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 92% 88%, rgba(0, 212, 161, 0.06), transparent 45%);
+      animation: meshShift 22s ease-in-out infinite alternate;
+    }
+    @keyframes meshShift {
+      0%   { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.06) translate(-1.5%, 1.5%); }
     }
 
-    @keyframes meshShift {
-      0% { transform: scale(1) translate(0, 0); }
-      100% { transform: scale(1.08) translate(-2%, 2%); }
+    .bg-glow {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse 40% 18% at 50% -4%, rgba(0, 82, 255, 0.18), transparent 70%);
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 20%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 20%, transparent 70%);
     }
 
     .noise {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.035;
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.035;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
+    /* ── Top bar ────────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: 40;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px clamp(16px, 4vw, 36px);
+      background: rgba(5, 6, 11, 0.72);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      backdrop-filter: blur(18px) saturate(150%);
+      border-bottom: 1px solid var(--border);
+      animation: fadeDown 0.6s var(--ease) both;
+    }
+    .topbar::after {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123,163,255,0.5), transparent);
+      pointer-events: none;
+    }
+
+    .brand { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      width: 38px; height: 38px; flex-shrink: 0;
+      filter: drop-shadow(0 4px 16px rgba(0, 82, 255, 0.45));
+      border-radius: 10px;
+    }
+    .brand-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: -0.02em; white-space: nowrap; }
+    .brand-badge {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--base-blue-soft);
+      background: rgba(0, 82, 255, 0.14);
+      border: 1px solid rgba(0, 82, 255, 0.28);
+      padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .network-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+      color: var(--base-blue-soft);
+      background: rgba(0, 82, 255, 0.12);
+      border: 1px solid rgba(0, 82, 255, 0.25);
+      padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+    }
+    .network-pill .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--base-blue-soft); box-shadow: 0 0 8px var(--base-blue-soft); }
+    .network-pill.wrong { color: var(--error); background: rgba(255, 92, 122, 0.1); border-color: rgba(255, 92, 122, 0.3); }
+    .network-pill.wrong .pill-dot { background: var(--error); box-shadow: 0 0 8px var(--error); }
+
+    /* ── Buttons ────────────────────────────────────── */
+    button {
+      font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 12px;
+      min-height: 44px;
+      transition: transform 0.18s var(--ease), box-shadow 0.22s var(--ease), background 0.22s var(--ease),
+                  border-color 0.22s var(--ease), color 0.22s var(--ease), filter 0.22s var(--ease), opacity 0.22s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:active:not(:disabled) { transform: scale(0.97); }
+
+    .btn-primary {
+      position: relative; color: #fff;
+      background: linear-gradient(180deg, var(--base-blue-2), var(--base-blue));
+      box-shadow: 0 1px 0 rgba(255,255,255,0.22) inset, 0 10px 30px -10px rgba(0, 82, 255, 0.7);
+      padding: 0 20px;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 45%);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.26) inset, 0 16px 40px -12px rgba(0, 82, 255, 0.85);
+      filter: brightness(1.06);
+    }
+    .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0 16px;
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--surface-2); color: var(--text); border-color: var(--border-strong);
+    }
+
+    .btn-full { width: 100%; }
+
+    .btn-addr {
+      color: var(--text); background: var(--surface-2);
+      border: 1px solid var(--border-strong); padding: 0 14px;
+      font-family: var(--font-mono); font-size: 13px;
+    }
+    .btn-addr:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
+
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .dot.is-on { background: var(--success); box-shadow: 0 0 10px rgba(43, 217, 168, 0.7); }
+
+    .spinner {
+      width: 15px; height: 15px; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Layout ─────────────────────────────────────── */
     .app {
+      position: relative; z-index: 2;
+      max-width: 1120px; margin: 0 auto;
+      padding: clamp(28px, 6vw, 64px) clamp(16px, 4vw, 36px) 90px;
+    }
+
+    /* ── Hero ───────────────────────────────────────── */
+    .hero { text-align: center; margin-bottom: clamp(36px, 6vw, 64px); }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted);
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px;
+      animation: fadeUp 0.7s var(--ease) both;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 26px; height: 1px; background: linear-gradient(90deg, transparent, var(--border-strong)); }
+    .hero-eyebrow::after { background: linear-gradient(90deg, var(--border-strong), transparent); }
+
+    .hero-title {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(40px, 7vw, 68px); line-height: 1.04; letter-spacing: -0.03em;
+      margin-bottom: 22px;
+      animation: fadeUp 0.7s var(--ease) 0.08s both;
+    }
+    .hero-title span {
+      background: linear-gradient(115deg, var(--base-blue-soft) 0%, var(--base-blue) 45%, var(--mint) 110%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+
+    .hero-sub {
+      color: var(--text-muted); font-size: clamp(15px, 2.4vw, 17px);
+      max-width: 560px; margin: 0 auto 26px;
+      animation: fadeUp 0.7s var(--ease) 0.16s both;
+    }
+
+    .hero-badges {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      animation: fadeUp 0.7s var(--ease) 0.24s both;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12.5px; color: var(--text-muted);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 7px 14px; border-radius: 999px;
+    }
+    .hero-badge svg { color: var(--base-blue-soft); }
+
+    /* ── Grid & cards ───────────────────────────────── */
+    .grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(16px, 2.6vw, 26px); align-items: start;
+    }
+
+    .card {
       position: relative;
-      z-index: 2;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 32px 20px 100px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015) 55%), var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(22px, 3vw, 30px);
+      -webkit-backdrop-filter: blur(22px);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow-card);
+      animation: fadeUp 0.8s var(--ease) both;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 28px; right: 28px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      pointer-events: none;
+    }
+    .card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
     }
 
-    /* Header */
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-      animation: fadeUp 0.7s ease-out;
+    .card--hero {
+      background:
+        radial-gradient(120% 90% at 10% 0%, rgba(0, 82, 255, 0.12), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015) 55%),
+        var(--surface-solid);
+      box-shadow: var(--shadow-card), 0 30px 90px -40px rgba(0, 82, 255, 0.55);
+    }
+    .card--hero:hover {
+      box-shadow: var(--shadow-hover), 0 40px 110px -45px rgba(0, 82, 255, 0.65);
     }
 
+    .side { display: flex; flex-direction: column; gap: clamp(16px, 2.6vw, 26px); }
+    .side .card:nth-child(1) { animation-delay: 0.14s; }
+    .side .card:nth-child(2) { animation-delay: 0.22s; }
+
+    .card-label {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 18px;
+    }
+    .card-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--base-blue-2), var(--base-blue));
+      box-shadow: 0 0 10px rgba(0, 82, 255, 0.8);
+    }
+    .card-label .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success); box-shadow: 0 0 10px rgba(43, 217, 168, 0.8);
+      animation: pulseDot 2.2s ease-out infinite;
+    }
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(43, 217, 168, 0.55); }
+      70% { box-shadow: 0 0 0 9px rgba(43, 217, 168, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(43, 217, 168, 0); }
+    }
+
+    /* ── Board (hero message) ───────────────────────── */
+    .board-quote {
+      font-family: var(--font-display); font-size: 58px; line-height: 0.4;
+      background: linear-gradient(135deg, var(--base-blue-2), var(--base-blue));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .board-message {
+      font-family: var(--font-display); font-weight: 600;
+      font-size: clamp(24px, 3.4vw, 34px); line-height: 1.28; letter-spacing: -0.015em;
+      word-break: break-word; margin-bottom: 20px;
+      transition: opacity 0.3s var(--ease);
+    }
+    .board-message.empty { color: var(--text-muted); font-weight: 500; font-size: clamp(20px, 2.6vw, 26px); }
+
+    .board-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+    .board-updates {
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .board-updates b { color: var(--text); font-weight: 600; }
+
+    .addr-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text);
+      background: var(--surface-2); border: 1px solid var(--border);
+      padding: 6px 10px; border-radius: 8px; min-height: 30px;
+      cursor: pointer; transition: all 0.18s var(--ease);
+    }
+    .addr-chip:hover { border-color: var(--base-blue-soft); color: var(--base-blue-soft); }
+    .addr-chip.copied { border-color: var(--success); color: var(--success); }
+    .addr-chip .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--base-blue-soft); }
+
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin-top: 26px;
+    }
+    .stat {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 14px; text-align: center;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    .stat:hover { border-color: var(--border-strong); background: rgba(255,255,255,0.06); }
+    .stat-value {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: 20px; letter-spacing: -0.01em; line-height: 1.15;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .stat-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); margin-top: 6px;
+    }
+
+    .board-actions {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .board-hint {
+      font-size: 12px; color: var(--text-dim);
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .board-hint svg { color: var(--success); }
+
+    /* ── Write ──────────────────────────────────────── */
+    .write-hint { font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; }
+    .input-wrap { position: relative; }
+
+    textarea {
+      width: 100%; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px 16px 34px; color: var(--text);
+      font-family: var(--font-sans); font-size: 15px; line-height: 1.6;
+      resize: vertical; min-height: 120px; outline: none;
+      transition: border-color 0.22s var(--ease), box-shadow 0.22s var(--ease), background 0.22s var(--ease);
+    }
+    textarea::placeholder { color: var(--text-dim); }
+    textarea:focus {
+      border-color: rgba(0, 82, 255, 0.7);
+      box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.16), 0 0 30px -8px rgba(0, 82, 255, 0.45);
+      background: rgba(255,255,255,0.06);
+    }
+    textarea:disabled { cursor: not-allowed; }
+
+    .char-progress {
+      display: block; height: 2px; width: 0%;
+      margin-top: 10px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--base-blue), var(--base-blue-soft), var(--mint));
+      transition: width 0.25s var(--ease), background 0.25s var(--ease);
+    }
+    .char-progress.over { background: var(--error); }
+
+    .char-count {
+      position: absolute; bottom: 14px; right: 16px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+      pointer-events: none; user-select: none;
+    }
+    .char-count.over { color: var(--error); font-weight: 600; }
+
+    .write-btn { margin-top: 16px; }
+
+    /* ── History ────────────────────────────────────── */
+    .history-list {
+      display: flex; flex-direction: column; gap: 10px;
+      max-height: 380px; overflow-y: auto; padding-right: 4px;
+    }
+    .history-list::-webkit-scrollbar { width: 6px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    .history-item {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px 16px;
+      transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+      animation: fadeUp 0.5s var(--ease) both;
+    }
+    .history-item:hover {
+      border-color: var(--border-strong); background: rgba(255,255,255,0.055);
+      transform: translateY(-1px);
+    }
+    .history-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .history-id {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--base-blue-soft);
+      background: rgba(0, 82, 255, 0.12); border: 1px solid rgba(0, 82, 255, 0.22);
+      padding: 3px 8px; border-radius: 7px;
+    }
+    .history-msg { font-size: 14.5px; font-weight: 500; word-break: break-word; margin-bottom: 10px; color: var(--text); }
+    .history-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .history-time { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+    .history-tx {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--success); display: inline-flex; align-items: center; gap: 5px;
+    }
+    .history-tx::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); }
+
+    .history-empty {
+      text-align: center; color: var(--text-muted);
+      padding: 34px 18px; font-size: 14px;
+    }
+    .history-empty svg { color: var(--text-dim); margin-bottom: 12px; }
+    .history-empty strong { color: var(--text); font-weight: 600; }
+    .history-empty p { margin: 2px 0 4px; }
+
+    /* ── Skeleton ───────────────────────────────────── */
+    .skeleton {
+      position: relative; display: block; overflow: hidden;
+      background: rgba(255,255,255,0.055);
+      border-radius: 8px;
+    }
+    .skeleton::after {
+      content: ''; position: absolute; inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation: shimmer 1.7s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    .board-skeleton { display: flex; flex-direction: column; gap: 12px; padding: 10px 0; }
+    .board-skeleton .skeleton { height: 20px; }
+    .history-skeleton { display: flex; flex-direction: column; gap: 12px; }
+    .history-skeleton .skeleton { height: 64px; border-radius: 16px; }
+
+    /* ── Footer ─────────────────────────────────────── */
+    .footer {
+      text-align: center; margin-top: clamp(36px, 5vw, 56px);
+      font-size: 13px; color: var(--text-dim);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+      animation: fadeUp 0.7s var(--ease) 0.4s both;
+    }
+    .footer a { color: var(--base-blue-soft); text-decoration: none; font-family: var(--font-mono); font-size: 12px; }
+    .footer a:hover { text-decoration: underline; }
+    .footer .sep { opacity: 0.4; }
+    .footer strong { color: var(--text-muted); font-weight: 600; }
+
+    /* ── Toast ──────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%; z-index: 100;
+      transform: translate(-50%, 16px);
+      display: flex; align-items: center; gap: 11px;
+      background: rgba(13, 17, 26, 0.92);
+      border: 1px solid var(--border-strong);
+      -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+      color: var(--text); padding: 13px 20px; border-radius: 14px;
+      font-size: 14px; font-weight: 500; line-height: 1.45;
+      box-shadow: 0 20px 60px -12px rgba(0,0,0,0.7);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      max-width: min(90vw, 480px); text-align: left;
+      transition: opacity 0.32s var(--ease), transform 0.32s var(--ease), visibility 0.32s;
+    }
+    #toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    #toast svg { flex-shrink: 0; }
+    #toast.success { border-color: rgba(43, 217, 168, 0.45); }
+    #toast.error { border-color: rgba(255, 92, 122, 0.45); }
+    #toast.info { border-color: rgba(123, 163, 255, 0.4); }
+
+    /* ── Confetti canvas ────────────────────────────── */
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+    /* ── Animations ─────────────────────────────────── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-14px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding: 8px 16px 8px 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      backdrop-filter: blur(12px);
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .side { display: contents; }
+      .side .card { margin-bottom: 0; }
+    }
+    @media (max-width: 600px) {
+      .brand-badge { display: none; }
+      .network-pill { display: none; }
+      .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat { padding: 14px 8px; }
+      .stat-value { font-size: 17px; }
+      .board-actions { flex-direction: column; align-items: stretch; }
     }
 
-    .logo-dot {
-      width: 28px;
-      height: 28px;
-      background: var(--base-blue);
-      border-radius: 50%;
-      box-shadow: 0 0 20px var(--base-blue-glow);
-      position: relative;
-    }
-
-    .logo-dot::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 1.5px solid var(--base-blue);
-      opacity: 0.4;
-      animation: pulseRing 2.5s ease-out infinite;
-    }
-
-    @keyframes pulseRing {
-      0% { transform: scale(0.9); opacity: 0.5; }
-      100% { transform: scale(1.5); opacity: 0; }
-    }
-
-    .logo-text {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-
-    .badge {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--base-blue);
-      background: rgba(0, 82, 255, 0.12);
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-left: 4px;
-    }
-
-    header h1 {
-      font-size: clamp(34px, 7vw, 52px);
-      font-weight: 800;
-      letter-spacing: -1.8px;
-      line-height: 1.08;
-      margin-bottom: 14px;
-    }
-
-    header h1 span {
-      background: linear-gradient(135deg, #0052FF 0%, #4D8AFF 50%, #00D4A1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    header p {
-      color: var(--text-muted);
-      font-size: 16px;
-      max-width: 380px;
-      margin: 0 auto;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(20px);
-      box-shadow: var(--shadow);
-      animation: fadeUp 0.7s ease-out both;
-    }
-
-    .card:nth-child(2) { animation-delay: 0.08s; }
-    .card:nth-child(3) { animation-delay: 0.16s; }
-    .card:nth-child(4) { animation-delay: 0.24s; }
-
-    .card-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-label .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--base-blue);
-    }
-
-    /* Wallet */
-    .wallet-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .wallet-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      flex-shrink: 0;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-
-    .status-dot.connected {
-      background: var(--success);
-      box-shadow: 0 0 12px rgba(0, 212, 161, 0.5);
-    }
-
-    .wallet-address {
-      font-family: var(--mono);
-      font-size: 14px;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .network-pill {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(0, 82, 255, 0.15);
-      color: #7BA3FF;
-      border: 1px solid rgba(0, 82, 255, 0.25);
-    }
-
-    .network-pill.wrong {
-      background: rgba(255, 77, 106, 0.12);
-      color: var(--error);
-      border-color: rgba(255, 77, 106, 0.3);
-    }
-
-    /* Buttons */
-    button, .btn {
-      font-family: var(--sans);
-      font-size: 14px;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: var(--base-blue);
-      color: white;
-      padding: 12px 20px;
-      box-shadow: 0 4px 20px var(--base-blue-glow);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 28px var(--base-blue-glow);
-      filter: brightness(1.08);
-    }
-
-    .btn-primary:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover:not(:disabled) {
-      background: var(--surface-2);
-      color: var(--text);
-      border-color: var(--border-strong);
-    }
-
-    .btn-full {
-      width: 100%;
-      padding: 14px 20px;
-      font-size: 15px;
-    }
-
-    /* Message display */
-    .message-box {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px;
-      min-height: 90px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .message-text {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
-      line-height: 1.35;
-      word-break: break-word;
-    }
-
-    .message-text.empty {
-      color: var(--text-muted);
-      font-weight: 500;
-      font-style: italic;
-    }
-
-    .message-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 20px;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-family: var(--mono);
-    }
-
-    .message-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .message-meta .label {
-      color: var(--text-muted);
-      opacity: 0.7;
-    }
-
-    /* Stats row */
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .stat {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--text);
-      font-family: var(--mono);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    /* Input */
-    .input-wrap {
-      position: relative;
-      margin-bottom: 14px;
-    }
-
-    textarea {
-      width: 100%;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 15px;
-      line-height: 1.5;
-      resize: vertical;
-      min-height: 100px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    textarea:focus {
-      border-color: var(--base-blue);
-      box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.18);
-    }
-
-    textarea::placeholder {
-      color: var(--text-muted);
-      opacity: 0.7;
-    }
-
-    .char-count {
-      position: absolute;
-      bottom: 12px;
-      right: 14px;
-      font-size: 12px;
-      font-family: var(--mono);
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
-    .char-count.over {
-      color: var(--error);
-    }
-
-    /* History */
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 360px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .history-list::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .history-list::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: 4px;
-    }
-
-    .history-item {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      animation: fadeUp 0.4s ease-out;
-    }
-
-    .history-msg {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      word-break: break-word;
-    }
-
-    .history-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      font-family: var(--mono);
-      color: var(--text-muted);
-    }
-
-    .history-empty {
-      text-align: center;
-      padding: 28px 16px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    /* Footer / contract link */
-    .footer {
-      text-align: center;
-      margin-top: 28px;
-      font-size: 13px;
-      color: var(--text-muted);
-      animation: fadeUp 0.7s ease-out 0.3s both;
-    }
-
-    .footer a {
-      color: #7BA3FF;
-      text-decoration: none;
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Toast */
-    #toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--surface-solid);
-      border: 1px solid var(--border-strong);
-      color: var(--text);
-      padding: 14px 22px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 100;
-      max-width: 90vw;
-      text-align: center;
-      backdrop-filter: blur(12px);
-    }
-
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    #toast.success { border-color: rgba(0, 212, 161, 0.4); }
-    #toast.error { border-color: rgba(255, 77, 106, 0.4); }
-
-    /* Spinner */
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,0.25);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Confetti canvas */
-    #confetti {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 50;
-    }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-      .app { padding: 24px 16px 80px; }
-      .card { padding: 20px; }
-      .message-text { font-size: 18px; }
-      .stats { grid-template-columns: 1fr 1fr; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .bg-mesh { animation: none; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-mesh"></div>
-  <div class="noise"></div>
-  <canvas id="confetti"></canvas>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
 
-  <div class="app">
-    <header>
-      <div class="logo">
-        <div class="logo-dot"></div>
-        <span class="logo-text">HelloBase</span>
-        <span class="badge">Sepolia</span>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-mark" src="assets/logo.svg" alt="HelloBase logo" width="38" height="38" />
+      <span class="brand-name">HelloBase</span>
+      <span class="brand-badge">Base Sepolia</span>
+    </div>
+    <div class="topbar-right">
+      <span class="network-pill" id="networkPill" aria-live="polite"><span class="pill-dot"></span><span id="networkPillText">Not connected</span></span>
+      <button class="btn-primary" id="connectBtn" type="button">Connect Wallet</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="hero">
+      <p class="hero-eyebrow">An on-chain message board</p>
+      <h1 class="hero-title">Leave your mark <span>on Base</span></h1>
+      <p class="hero-sub">Connect your wallet, write up to 280 characters, and your message becomes part of the chain — public and permanent.</p>
+      <div class="hero-badges">
+        <span class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>No signup</span>
+        <span class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>280 characters</span>
+        <span class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>Forever on L2</span>
       </div>
-      <h1>Leave your mark<br /><span>on Base</span></h1>
-      <p>A public on-chain message board. Write once, live forever on L2.</p>
-    </header>
+    </section>
 
-    <!-- Wallet -->
-    <div class="card">
-      <div class="card-label"><span class="dot"></span> Wallet</div>
-      <div class="wallet-row">
-        <div class="wallet-info">
-          <div class="status-dot" id="statusDot"></div>
-          <div>
-            <div class="wallet-address" id="walletAddress">Not connected</div>
-            <div style="margin-top:4px">
-              <span class="network-pill" id="networkPill">—</span>
-            </div>
+    <section class="grid">
+      <!-- Board -->
+      <article class="card card--hero">
+        <div class="card-label"><span class="card-dot"></span> On the board now</div>
+
+        <div class="board-skeleton" id="boardSkeleton" aria-hidden="true" hidden>
+          <span class="skeleton" style="width:84%"></span>
+          <span class="skeleton" style="width:58%"></span>
+        </div>
+
+        <div id="board">
+          <p class="board-quote" aria-hidden="true">&ldquo;</p>
+          <p class="board-message empty" id="currentMessage">Connect your wallet to read the board</p>
+          <div class="board-meta" id="boardMeta" hidden>
+            <button class="addr-chip" id="updaterChip" type="button" title="Copy address" data-full="">
+              <span class="chip-dot"></span>
+              <span id="lastUpdater">—</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <span class="board-updates"><b id="updateCount">0</b> total updates</span>
           </div>
         </div>
-        <button class="btn-primary" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
-      </div>
-    </div>
 
-    <!-- Current Message -->
-    <div class="card">
-      <div class="card-label"><span class="dot"></span> Current Message</div>
-      <div class="message-box">
-        <div class="message-text empty" id="currentMessage">Connect wallet & read the board…</div>
-        <div class="message-meta" id="messageMeta" style="display:none">
-          <span><span class="label">by</span> <span id="lastUpdater">—</span></span>
-          <span><span class="label">updates</span> <span id="updateCount">0</span></span>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" id="statUpdates">—</div>
+            <div class="stat-label">Total updates</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="statWriter">—</div>
+            <div class="stat-label">Last writer</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="statNetwork">Base Sepolia</div>
+            <div class="stat-label">Network</div>
+          </div>
         </div>
-      </div>
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-value" id="statUpdates">—</div>
-          <div class="stat-label">Total Updates</div>
+
+        <div class="board-actions">
+          <span class="board-hint">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Live from the blockchain
+          </span>
+          <button class="btn-ghost" id="readBtn" type="button" disabled>Refresh board</button>
         </div>
-        <div class="stat">
-          <div class="stat-value" id="statNetwork">Base</div>
-          <div class="stat-label">Network</div>
-        </div>
-      </div>
-      <div style="margin-top:16px; display:flex; gap:10px;">
-        <button class="btn-ghost btn-full" id="readBtn" onclick="readBoard()" disabled>Refresh Board</button>
-      </div>
-    </div>
+      </article>
 
-    <!-- Write -->
-    <div class="card">
-      <div class="card-label"><span class="dot"></span> Write a Message</div>
-      <div class="input-wrap">
-        <textarea id="messageInput" placeholder="What's on your mind? (max 280 chars)" maxlength="300" oninput="updateCharCount()" disabled></textarea>
-        <span class="char-count" id="charCount">0 / 280</span>
+      <!-- Right column -->
+      <div class="side">
+        <article class="card">
+          <div class="card-label"><span class="card-dot"></span> Write a message</div>
+          <p class="write-hint">Every message is public and permanent on the chain. Pick your words — they’ll outlive this page.</p>
+          <div class="input-wrap">
+            <textarea id="messageInput" maxlength="300" placeholder="What’s on your mind?" disabled></textarea>
+            <span class="char-count" id="charCount">0 / 280</span>
+          </div>
+          <span class="char-progress" id="charProgress" aria-hidden="true"></span>
+          <button class="btn-primary btn-full write-btn" id="writeBtn" type="button" disabled>Save to blockchain</button>
+        </article>
+
+        <article class="card">
+          <div class="card-label"><span class="card-dot"></span> Recent activity</div>
+          <div class="history-list" id="historyList" aria-live="polite">
+            <div class="history-empty">
+              <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+              <p><strong>No messages yet</strong></p>
+              <span>Connect your wallet and refresh to load on-chain activity.</span>
+            </div>
+          </div>
+        </article>
       </div>
-      <button class="btn-primary btn-full" id="writeBtn" onclick="setMessage()" disabled>Save to Blockchain</button>
-    </div>
+    </section>
+  </main>
 
-    <!-- History -->
-    <div class="card">
-      <div class="card-label"><span class="dot"></span> Recent Activity</div>
-      <div class="history-list" id="historyList">
-        <div class="history-empty">Connect & refresh to load on-chain history</div>
-      </div>
-    </div>
+  <footer class="footer">
+    <span>Contract</span>
+    <a id="contractLink" href="#" target="_blank" rel="noopener">—</a>
+    <span class="sep">·</span>
+    <span>Built for <strong>Base</strong></span>
+    <span class="sep">·</span>
+    <span>Powered by ethers.js</span>
+  </footer>
 
-    <div class="footer">
-      Contract: <a id="contractLink" href="#" target="_blank" rel="noopener">—</a>
-      <br /><br />
-      Built for <strong style="color:var(--text)">Base</strong> · Powered by ethers.js
-    </div>
-  </div>
-
-  <div id="toast"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.0/ethers.umd.min.js"></script>
   <script>
@@ -680,6 +712,13 @@
     ];
 
     let provider, signer, contract, userAddress;
+    let _lastUpdater = "";
+
+    // Static icons
+    const ICON = {
+      copy: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+      wallet: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>'
+    };
 
     // ─── Helpers ───────────────────────────────────────
     function shortAddr(addr) {
@@ -687,83 +726,204 @@
       return addr.slice(0, 6) + "…" + addr.slice(-4);
     }
 
-    function showToast(message, type = "") {
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function timeAgo(ms) {
+      const diff = Date.now() - ms;
+      const s = Math.floor(diff / 1000);
+      if (s < 60) return "just now";
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + "m ago";
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + "h ago";
+      const d = Math.floor(h / 24);
+      if (d < 7) return d + "d ago";
+      return new Date(ms).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function flashCopied(el) {
+      el.classList.add("copied");
+      clearTimeout(el._flash);
+      el._flash = setTimeout(() => el.classList.remove("copied"), 1200);
+    }
+
+    function toastIcon(type) {
+      const common = ' xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"';
+      if (type === "success") return '<svg' + common + '><circle cx="12" cy="12" r="10" style="opacity:.25"/><path d="m8.5 12.5 2.5 2.5 5-6"/></svg>';
+      if (type === "error") return '<svg' + common + '><circle cx="12" cy="12" r="10" style="opacity:.25"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+      return '<svg' + common + '><circle cx="12" cy="12" r="10" style="opacity:.25"/><path d="M12 16v-4M12 8h.01"/></svg>';
+    }
+
+    function showToast(message, type = "info") {
       const el = document.getElementById("toast");
-      el.textContent = message;
       el.className = "show " + type;
+      el.innerHTML = toastIcon(type) + "<span></span>";
+      el.querySelector("span").textContent = message;
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => { el.className = ""; }, 4200);
     }
 
     function updateCharCount() {
-      const len = document.getElementById("messageInput").value.length;
+      const input = document.getElementById("messageInput");
+      const len = input.value.length;
       const el = document.getElementById("charCount");
-      el.textContent = `${len} / 280`;
+      el.textContent = len + " / 280";
       el.classList.toggle("over", len > 280);
+      const bar = document.getElementById("charProgress");
+      bar.style.width = Math.min((len / 280) * 100, 100) + "%";
+      bar.classList.toggle("over", len > 280);
+    }
+
+    const btnRest = {};
+    function captureButtonState() {
+      btnRest.read = document.getElementById("readBtn").innerHTML;
+      btnRest.write = document.getElementById("writeBtn").innerHTML;
+    }
+
+    function setBusy(btn, label) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span><span>' + label + "</span>";
     }
 
     function setConnectedUI(connected) {
-      const dot = document.getElementById("statusDot");
       const btn = document.getElementById("connectBtn");
       const readBtn = document.getElementById("readBtn");
       const writeBtn = document.getElementById("writeBtn");
       const input = document.getElementById("messageInput");
 
       if (connected) {
-        dot.classList.add("connected");
-        btn.textContent = "Connected";
-        btn.disabled = true;
+        btn.className = "btn-addr";
+        btn.innerHTML =
+          '<span class="dot is-on" aria-hidden="true"></span>' +
+          '<span>' + shortAddr(userAddress) + "</span>" +
+          ICON.copy +
+          '<span class="sr-only">Copy wallet address</span>';
+        btn.onclick = () => copyWallet();
+        btn.title = "Copy wallet address";
         readBtn.disabled = false;
         writeBtn.disabled = false;
         input.disabled = false;
       } else {
-        dot.classList.remove("connected");
-        btn.textContent = "Connect Wallet";
-        btn.disabled = false;
+        btn.className = "btn-primary";
+        btn.innerHTML = ICON.wallet + '<span>Connect Wallet</span>';
+        btn.onclick = connectWallet;
+        btn.removeAttribute("title");
         readBtn.disabled = true;
         writeBtn.disabled = true;
         input.disabled = true;
       }
     }
 
-    // ─── Confetti ──────────────────────────────────────
+    async function copyWallet() {
+      if (!userAddress) return;
+      if (await copyText(userAddress)) {
+        flashCopied(document.getElementById("connectBtn"));
+        showToast("Wallet address copied", "success");
+      } else {
+        showToast("Couldn’t copy address", "error");
+      }
+    }
+
+    function copyUpdater() {
+      const chip = document.getElementById("updaterChip");
+      if (!_lastUpdater) return;
+      copyText(_lastUpdater).then(ok => {
+        if (ok) { flashCopied(chip); showToast("Address copied", "success"); }
+        else showToast("Couldn’t copy address", "error");
+      });
+    }
+
+    function copyHistory(btn) {
+      const full = btn.getAttribute("data-full");
+      if (!full) return;
+      copyText(full).then(ok => {
+        if (ok) { flashCopied(btn); showToast("Address copied", "success"); }
+        else showToast("Couldn’t copy address", "error");
+      });
+    }
+
+    function setNetworkPill(text, wrong) {
+      const pill = document.getElementById("networkPill");
+      document.getElementById("networkPillText").textContent = text;
+      pill.classList.toggle("wrong", !!wrong);
+    }
+
+    // ─── Confetti (refined) ─────────────────────────────
     function fireConfetti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const canvas = document.getElementById("confetti");
       const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+
+      const colors = ["#0052FF", "#3B76FF", "#7BA3FF", "#00D4A1", "#FFFFFF"];
       const pieces = [];
-      const colors = ["#0052FF", "#00D4A1", "#4D8AFF", "#FFFFFF", "#7BA3FF"];
-      for (let i = 0; i < 80; i++) {
+      const cx = canvas.width / 2;
+      const cy = canvas.height * 0.38;
+
+      for (let i = 0; i < 120; i++) {
+        const angle = (Math.PI * 2 * i) / 120 + Math.random() * 0.7;
+        const spread = 0.35 + Math.random() * 0.65;
         pieces.push({
-          x: Math.random() * canvas.width,
-          y: -20 - Math.random() * 100,
-          w: 6 + Math.random() * 8,
-          h: 4 + Math.random() * 6,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          vx: (Math.random() - 0.5) * 6,
-          vy: 2 + Math.random() * 4,
+          x: cx + Math.cos(angle) * 90 * spread,
+          y: cy + Math.sin(angle) * 60 * spread,
+          vx: Math.cos(angle) * (1.6 + Math.random() * 3.2),
+          vy: Math.sin(angle) * (1.6 + Math.random() * 3.2) - 1.8,
+          w: 4 + Math.random() * 4,
+          h: 2.6 + Math.random() * 3,
+          color: colors[(Math.random() * colors.length) | 0],
           rot: Math.random() * Math.PI,
-          vr: (Math.random() - 0.5) * 0.2
+          vr: (Math.random() - 0.5) * 0.24,
+          life: 1,
+          decay: 0.011 + Math.random() * 0.011
         });
       }
-      let frames = 0;
+
+      let frame = 0;
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         pieces.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.08;
-          p.rot += p.vr;
+          if (p.life <= 0) return;
+          p.x += p.vx; p.y += p.vy;
+          p.vy += 0.055; p.vx *= 0.99;
+          p.rot += p.vr; p.life -= p.decay;
           ctx.save();
+          ctx.globalAlpha = Math.max(p.life, 0);
           ctx.translate(p.x, p.y);
           ctx.rotate(p.rot);
           ctx.fillStyle = p.color;
           ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
           ctx.restore();
         });
-        frames++;
-        if (frames < 120) requestAnimationFrame(draw);
+        frame++;
+        if (frame < 160) requestAnimationFrame(draw);
         else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       draw();
@@ -772,9 +932,11 @@
     // ─── Wallet ────────────────────────────────────────
     async function connectWallet() {
       if (!window.ethereum) {
-        showToast("Please install MetaMask or another Web3 wallet", "error");
+        showToast("Install MetaMask or another Web3 wallet to continue", "error");
         return;
       }
+      const btn = document.getElementById("connectBtn");
+      setBusy(btn, "Connecting…");
       try {
         provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
@@ -782,12 +944,9 @@
         signer = await provider.getSigner();
 
         const network = await provider.getNetwork();
-        const chainIdHex = "0x" + network.chainId.toString(16);
 
-        const pill = document.getElementById("networkPill");
         if (network.chainId !== 84532n) {
-          pill.textContent = "Wrong network";
-          pill.classList.add("wrong");
+          setNetworkPill("Wrong network", true);
           showToast("Switching to Base Sepolia…");
           try {
             await window.ethereum.request({
@@ -804,17 +963,11 @@
               throw switchErr;
             }
           }
-          // re-fetch after switch
           provider = new ethers.BrowserProvider(window.ethereum);
           signer = await provider.getSigner();
-          pill.textContent = "Base Sepolia";
-          pill.classList.remove("wrong");
-        } else {
-          pill.textContent = "Base Sepolia";
-          pill.classList.remove("wrong");
         }
 
-        document.getElementById("walletAddress").textContent = shortAddr(userAddress);
+        setNetworkPill("Base Sepolia", false);
         setConnectedUI(true);
 
         if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
@@ -823,128 +976,170 @@
           await readBoard();
           await loadHistory();
         } else {
-          showToast("⚠️ Set CONTRACT_ADDRESS in the code after deploy", "error");
+          showToast("Set CONTRACT_ADDRESS in the code after deploy", "error");
         }
 
-        // Listen for account / chain changes
         window.ethereum.on("accountsChanged", () => window.location.reload());
         window.ethereum.on("chainChanged", () => window.location.reload());
       } catch (err) {
         console.error(err);
         showToast(err?.message || "Connection failed", "error");
+        setConnectedUI(false);
+      } finally {
+        if (!userAddress) {
+          const b = document.getElementById("connectBtn");
+          b.disabled = false;
+          b.innerHTML = ICON.wallet + '<span>Connect Wallet</span>';
+        }
       }
     }
 
     function updateContractLink() {
       const link = document.getElementById("contractLink");
       link.textContent = shortAddr(CONTRACT_ADDRESS);
-      link.href = `https://sepolia.basescan.org/address/${CONTRACT_ADDRESS}`;
+      link.href = "https://sepolia.basescan.org/address/" + CONTRACT_ADDRESS;
     }
 
     // ─── Board ─────────────────────────────────────────
     async function readBoard() {
       if (!contract) return;
       const btn = document.getElementById("readBtn");
-      btn.innerHTML = '<span class="spinner"></span> Reading…';
-      btn.disabled = true;
+      const skeleton = document.getElementById("boardSkeleton");
+      const board = document.getElementById("board");
+      const msgEl = document.getElementById("currentMessage");
+
+      setBusy(btn, "Reading…");
+      skeleton.hidden = false;
+      board.hidden = true;
       try {
         const [msg, updater, count] = await contract.getBoardState();
-        const el = document.getElementById("currentMessage");
-        el.textContent = msg || "(empty)";
-        el.classList.toggle("empty", !msg);
-
-        document.getElementById("messageMeta").style.display = "flex";
+        _lastUpdater = updater;
+        msgEl.textContent = msg || "The board is empty — be the first to leave your mark.";
+        msgEl.classList.toggle("empty", !msg);
+        document.getElementById("updaterChip").setAttribute("data-full", updater);
         document.getElementById("lastUpdater").textContent = shortAddr(updater);
         document.getElementById("updateCount").textContent = count.toString();
         document.getElementById("statUpdates").textContent = count.toString();
+        document.getElementById("statWriter").textContent = shortAddr(updater);
+        document.getElementById("boardMeta").hidden = false;
+        board.hidden = false;
       } catch (err) {
-        showToast("Failed to read: " + (err?.reason || err.message), "error");
+        msgEl.textContent = "Couldn’t load the board. Try again.";
+        msgEl.classList.add("empty");
+        board.hidden = false;
+        showToast("Failed to read: " + (err?.reason || err?.message || "unknown error"), "error");
       } finally {
-        btn.textContent = "Refresh Board";
+        skeleton.hidden = true;
         btn.disabled = false;
+        btn.innerHTML = btnRest.read;
       }
     }
 
+    // ─── Write ─────────────────────────────────────────
     async function setMessage() {
       if (!contract) return;
-      const input = document.getElementById("messageInput").value.trim();
-      if (!input) {
-        showToast("Message cannot be empty", "error");
+      const input = document.getElementById("messageInput");
+      const val = input.value.trim();
+      if (!val) {
+        showToast("Your message can’t be empty", "error");
         return;
       }
-      if (input.length > 280) {
-        showToast("Message too long (max 280)", "error");
+      if (val.length > 280) {
+        showToast("Messages are limited to 280 characters", "error");
         return;
       }
       const btn = document.getElementById("writeBtn");
-      btn.innerHTML = '<span class="spinner"></span> Confirm in wallet…';
-      btn.disabled = true;
       try {
-        const tx = await contract.setMessage(input);
-        showToast("⏳ Transaction submitted — waiting for confirmation…");
-        btn.innerHTML = '<span class="spinner"></span> Confirming…';
+        setBusy(btn, "Awaiting approval…");
+        const tx = await contract.setMessage(val);
+        showToast("Transaction submitted — waiting for confirmation…");
+        setBusy(btn, "Confirming on-chain…");
         await tx.wait();
-        showToast("✅ Message saved on-chain forever!", "success");
+        showToast("Your message is now on-chain forever.", "success");
         fireConfetti();
-        document.getElementById("messageInput").value = "";
+        input.value = "";
         updateCharCount();
         await readBoard();
         await loadHistory();
       } catch (err) {
         const msg = err?.reason || err?.shortMessage || err?.message || "Transaction failed";
-        showToast("❌ " + msg, "error");
+        showToast(msg, "error");
       } finally {
-        btn.textContent = "Save to Blockchain";
         btn.disabled = false;
+        btn.innerHTML = btnRest.write;
       }
+    }
+
+    // ─── History ───────────────────────────────────────
+    function skeletonRows(n) {
+      let out = '<div class="history-skeleton" aria-hidden="true">';
+      for (let i = 0; i < n; i++) out += '<span class="skeleton"></span>';
+      return out + "</div>";
     }
 
     async function loadHistory() {
       if (!contract || !provider) return;
       const list = document.getElementById("historyList");
+      list.innerHTML = skeletonRows(3);
       try {
-        // Query last ~2000 blocks for events (adjust if needed)
         const currentBlock = await provider.getBlockNumber();
         const fromBlock = Math.max(0, currentBlock - 5000);
-        const filter = contract.filters.MessageUpdated();
-        const events = await contract.queryFilter(filter, fromBlock, "latest");
+        const events = await contract.queryFilter(contract.filters.MessageUpdated(), fromBlock, "latest");
         const recent = events.slice(-12).reverse();
 
         if (recent.length === 0) {
-          list.innerHTML = '<div class="history-empty">No recent activity found in last blocks</div>';
+          list.innerHTML =
+            '<div class="history-empty">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>' +
+            "<p><strong>No recent activity</strong></p>" +
+            "<span>No messages in the last few thousand blocks. Refresh to check again.</span>" +
+            "</div>";
           return;
         }
 
-        list.innerHTML = recent.map(ev => {
+        const frag = document.createDocumentFragment();
+        recent.forEach((ev, i) => {
           const { sender, newMessage, updateId, timestamp } = ev.args;
-          const time = timestamp ? new Date(Number(timestamp) * 1000).toLocaleString() : "—";
-          return `
-            <div class="history-item">
-              <div class="history-msg">${escapeHtml(newMessage)}</div>
-              <div class="history-meta">
-                <span>${shortAddr(sender)} · #${updateId}</span>
-                <span>${time}</span>
-              </div>
-            </div>`;
-        }).join("");
+          const ms = timestamp ? Number(timestamp) * 1000 : null;
+          const item = document.createElement("div");
+          item.className = "history-item";
+          item.style.animationDelay = Math.min(i * 55, 420) + "ms";
+          item.innerHTML =
+            '<div class="history-head">' +
+            '<span class="history-id">#' + updateId.toString() + "</span>" +
+            '<button class="addr-chip" type="button" data-full="' + sender + '" title="Copy address" onclick="copyHistory(this)">' +
+            '<span class="chip-dot"></span>' + shortAddr(sender) + ICON.copy +
+            "</button>" +
+            "</div>" +
+            '<p class="history-msg">' + escapeHtml(newMessage) + "</p>" +
+            '<div class="history-foot">' +
+            '<span class="history-time" title="' + (ms ? new Date(ms).toLocaleString() : "") + '">' + (ms ? timeAgo(ms) : "—") + "</span>" +
+            '<span class="history-tx">on-chain</span>' +
+            "</div>";
+          frag.appendChild(item);
+        });
+        list.innerHTML = "";
+        list.appendChild(frag);
       } catch (err) {
         console.warn("History load failed:", err);
-        list.innerHTML = '<div class="history-empty">Could not load history (RPC limits)</div>';
+        list.innerHTML = '<div class="history-empty"><strong>Couldn’t load history</strong><br /><span>RPC limits may apply — refresh to retry.</span></div>';
       }
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    // ─── Init ──────────────────────────────────────────
+    function init() {
+      captureButtonState();
+      document.getElementById("connectBtn").addEventListener("click", connectWallet);
+      document.getElementById("readBtn").addEventListener("click", readBoard);
+      document.getElementById("writeBtn").addEventListener("click", setMessage);
+      document.getElementById("messageInput").addEventListener("input", updateCharCount);
+      document.getElementById("updaterChip").addEventListener("click", copyUpdater);
+      updateCharCount();
+      if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
+        updateContractLink();
+      }
     }
-
-    // Init contract link if already set
-    if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
-      updateContractLink();
-    }
+    init();
   </script>
 </body>
 </html>
