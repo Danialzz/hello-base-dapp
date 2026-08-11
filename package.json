@@ -1,7 +1,7 @@
 {
   "name": "hello-base-dapp",
   "version": "1.0.0",
-  "description": "A simple Hello World dApp on Base network",
+  "description": "Premium on-chain message board on Base. Leave your mark forever on L2.",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",

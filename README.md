@@ -8,6 +8,14 @@ Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow —
 - 🔵 **App:** [danialzz.github.io/hello-base-dapp](https://danialzz.github.io/hello-base-dapp/)
 - 🔎 **Contract on BaseScan:** [sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9](https://sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9)
 
+**GitHub repository metadata**
+
+Set the repo **About / description** on GitHub to:
+
+> Premium on-chain message board on Base Sepolia. Leave your mark forever on L2.
+
+Suggested topics: `base`, `base-sepolia`, `dapp`, `web3`, `solidity`, `ethereum`, `onchain`.
+
 ---
 
 ## Features
