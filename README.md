@@ -27,6 +27,8 @@ Suggested topics: `base`, `base-sepolia`, `dapp`, `web3`, `solidity`, `ethereum`
 - **On-chain history feed** — latest 12 events with relative timestamps, update IDs, copyable address badges and a per-transaction BaseScan link
 - **Skeleton loaders** — structured shimmer placeholders for the board and history instead of plain spinners
 - **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically; declines are handled gracefully
+- **Multi-wallet connect** — a polished wallet-selector modal (MetaMask, Coinbase Wallet, Rabby, Brave, browser fallback) with install detection and an "Install ↗" state for missing wallets
+- **Product-grade footer** — branded footer with gradient hairline, contract address (copy + BaseScan link) and network status
 - **Clear transaction states** — step-by-step status line ("approve in wallet" → "confirming on Base") plus a pulsing button glow while a write is pending
 - **Refined confetti** — a calm, eased burst on successful writes, plus a subtle glow flash on the hero message (respects `prefers-reduced-motion`)
 - **Copy-to-clipboard** on every truncated address with clear "Copied" feedback
