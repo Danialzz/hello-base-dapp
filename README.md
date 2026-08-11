@@ -16,11 +16,12 @@ Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow —
 - **Design system** — Space Grotesk display type, Inter body, JetBrains Mono for on-chain data; generous spacing, layered shadows and micro-interactions throughout
 - **Hero message display** — the current message is the focal point of the page, styled as a large quote panel with live board stats
 - **Real-time board state** — message + last writer + total updates via one `getBoardState()` call
-- **On-chain history feed** — last 12 events with relative timestamps, update IDs and copy-to-clipboard address badges
-- **Skeleton loaders** — shimmer placeholders for the board and history instead of plain spinners
-- **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically
-- **Refined confetti** — a calm, eased burst on successful writes (respects `prefers-reduced-motion`)
-- **Copy-to-clipboard** on every truncated address
+- **On-chain history feed** — latest 12 events with relative timestamps, update IDs, copyable address badges and a per-transaction BaseScan link
+- **Skeleton loaders** — structured shimmer placeholders for the board and history instead of plain spinners
+- **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically; declines are handled gracefully
+- **Clear transaction states** — step-by-step status line ("approve in wallet" → "confirming on Base") plus a pulsing button glow while a write is pending
+- **Refined confetti** — a calm, eased burst on successful writes, plus a subtle glow flash on the hero message (respects `prefers-reduced-motion`)
+- **Copy-to-clipboard** on every truncated address with clear "Copied" feedback
 - **Live network status pill** in the header
 - **Branding & social** — custom SVG logo, favicon set (`.ico` + SVG + apple-touch-icon + webmanifest), Open Graph and Twitter Card tags
 - **Accessibility basics** — visible focus states, `aria` labels, semantic landmarks, keyboard-friendly
@@ -34,6 +35,7 @@ Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow —
 hello-base-dapp/
 ├── contracts/HelloBase.sol   # Solidity contract
 ├── scripts/deploy.js         # Deploy script
+├── scripts/sync-docs.js      # Syncs frontend/ → docs/ for GitHub Pages
 ├── test/HelloBase.test.js    # Unit tests
 ├── frontend/                 # dApp source (single-file, no build step)
 │   ├── index.html            # The entire dApp — HTML, CSS & JS
@@ -46,7 +48,23 @@ hello-base-dapp/
 └── README.md
 ```
 
-> **Keeping `docs/` in sync:** `docs/` is what GitHub Pages serves. After editing `frontend/`, copy the changed files into `docs/` (`index.html` and any assets).
+> **`frontend/` and `docs/` are identical by design.** `docs/` is what GitHub
+> Pages serves, so the two folders are kept as exact mirrors of each other.
+
+---
+
+## Syncing the GitHub Pages build
+
+After editing anything under `frontend/` (`index.html` or `assets/`), mirror it
+into `docs/` with a single command:
+
+```bash
+npm run sync:docs
+```
+
+This wipes and re-copies the whole `frontend/` folder into `docs/`, so they never
+drift. Both folders are intentionally identical — there are no documented
+differences between them.
 
 ---
 

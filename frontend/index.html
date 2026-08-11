@@ -44,7 +44,7 @@
       --border-strong: rgba(255, 255, 255, 0.15);
       --text: #F5F7FB;
       --text-muted: #9AA3B5;
-      --text-dim: #67718A;
+      --text-dim: #7B8599;
       --success: #2BD9A8;
       --error: #FF5C7A;
       --warning: #FFB454;
@@ -152,6 +152,7 @@
     .topbar-right { display: flex; align-items: center; gap: 12px; }
 
     .network-pill {
+      position: relative;
       display: inline-flex; align-items: center; gap: 7px;
       font-family: var(--font-mono); font-size: 11px; font-weight: 500;
       color: var(--base-blue-soft);
@@ -211,6 +212,7 @@
       font-family: var(--font-mono); font-size: 13px;
     }
     .btn-addr:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
+    .btn-addr.copied { border-color: var(--success); color: var(--success); }
 
     .dot {
       width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0;
@@ -358,6 +360,14 @@
       display: inline-flex; align-items: center; gap: 7px;
     }
     .board-updates b { color: var(--text); font-weight: 600; }
+    .board-updated {
+      font-family: var(--font-mono); font-size: 11px; color: var(--success);
+      background: rgba(43, 217, 168, 0.1); border: 1px solid rgba(43, 217, 168, 0.35);
+      padding: 4px 10px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 6px;
+      animation: fadeUp 0.4s var(--ease) both;
+    }
+    .board-updated::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); }
 
     .addr-chip {
       display: inline-flex; align-items: center; gap: 7px;
@@ -389,6 +399,16 @@
       font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--text-dim); margin-top: 6px;
     }
+    .stat-writer {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: 20px; letter-spacing: -0.01em; line-height: 1.15;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      color: var(--text); background: none; border: none; cursor: pointer;
+      padding: 0; min-height: auto; margin: 0 auto; display: inline-block;
+      transition: color 0.18s var(--ease);
+    }
+    .stat-writer:hover { color: var(--base-blue-soft); }
+    .stat-writer.copied { color: var(--success); }
 
     .board-actions {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -437,6 +457,21 @@
 
     .write-btn { margin-top: 16px; }
 
+    .tx-status {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 14px; font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-muted);
+    }
+    .tx-status .tx-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--base-blue-soft); box-shadow: 0 0 8px var(--base-blue-soft);
+      animation: pulseDot 1.6s ease-out infinite;
+    }
+    .tx-status.success { color: var(--success); }
+    .tx-status.success .tx-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .tx-status.error { color: var(--error); }
+    .tx-status.error .tx-dot { background: var(--error); box-shadow: 0 0 8px var(--error); animation: none; }
+
     /* ── History ────────────────────────────────────── */
     .history-list {
       display: flex; flex-direction: column; gap: 10px;
@@ -463,17 +498,36 @@
       padding: 3px 8px; border-radius: 7px;
     }
     .history-msg { font-size: 14.5px; font-weight: 500; word-break: break-word; margin-bottom: 10px; color: var(--text); }
-    .history-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .history-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .history-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .history-time { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
     .history-tx {
       font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--success); display: inline-flex; align-items: center; gap: 5px;
     }
     .history-tx::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .history-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+      color: var(--base-blue-soft); text-decoration: none; white-space: nowrap;
+      padding: 4px 9px; border: 1px solid var(--border); border-radius: 7px;
+      background: var(--surface-2); transition: all 0.18s var(--ease);
+    }
+    .history-link:hover { border-color: var(--base-blue-soft); color: var(--text); }
+
+    .history-note {
+      margin-left: auto; white-space: nowrap;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-dim); background: var(--surface-2); border: 1px solid var(--border);
+      padding: 3px 9px; border-radius: 999px;
+    }
 
     .history-empty {
       text-align: center; color: var(--text-muted);
-      padding: 34px 18px; font-size: 14px;
+      padding: 34px 20px; font-size: 14px;
+      background: var(--surface-2);
+      border: 1px dashed var(--border-strong);
+      border-radius: 16px;
     }
     .history-empty svg { color: var(--text-dim); margin-bottom: 12px; }
     .history-empty strong { color: var(--text); font-weight: 600; }
@@ -495,8 +549,15 @@
 
     .board-skeleton { display: flex; flex-direction: column; gap: 12px; padding: 10px 0; }
     .board-skeleton .skeleton { height: 20px; }
-    .history-skeleton { display: flex; flex-direction: column; gap: 12px; }
-    .history-skeleton .skeleton { height: 64px; border-radius: 16px; }
+    .history-skeleton { display: flex; flex-direction: column; gap: 10px; }
+    .skeleton-item {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .skeleton-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .skeleton-chip { height: 22px; border-radius: 7px; }
+    .skeleton-line { height: 12px; }
 
     /* ── Footer ─────────────────────────────────────── */
     .footer {
@@ -543,6 +604,16 @@
       from { opacity: 0; transform: translateY(-14px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .btn-primary.is-pending { animation: pulseGlow 1.9s ease-in-out infinite; }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 1px 0 rgba(255,255,255,0.22) inset, 0 10px 30px -10px rgba(0,82,255,0.7); }
+      50% { box-shadow: 0 1px 0 rgba(255,255,255,0.3) inset, 0 14px 46px -8px rgba(0,82,255,0.95); }
+    }
+    .board-message.flash { animation: msgFlash 1.8s var(--ease); }
+    @keyframes msgFlash {
+      0%, 100% { text-shadow: none; }
+      35% { text-shadow: 0 0 30px rgba(43,217,168,0.65), 0 0 2px rgba(43,217,168,0.3); }
+    }
 
     /* ── Responsive ─────────────────────────────────── */
     @media (max-width: 900px) {
@@ -551,11 +622,21 @@
       .side .card { margin-bottom: 0; }
     }
     @media (max-width: 600px) {
+      .topbar { padding: 12px 16px; gap: 12px; }
+      .topbar-right { gap: 10px; }
+      .brand-mark { width: 34px; height: 34px; }
+      .brand-name { font-size: 16px; }
       .brand-badge { display: none; }
-      .network-pill { display: none; }
+      .network-pill { padding: 8px; }
+      .network-pill #networkPillText {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      }
+      #connectBtn { padding: 0 16px; }
+      #connectBtn.btn-addr { padding: 0 12px; font-size: 12px; }
       .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
       .stat { padding: 14px 8px; }
-      .stat-value { font-size: 17px; }
+      .stat-value, .stat-writer { font-size: 16px; }
       .board-actions { flex-direction: column; align-items: stretch; }
     }
 
@@ -603,7 +684,7 @@
 
     <section class="grid">
       <!-- Board -->
-      <article class="card card--hero">
+      <article class="card card--hero" id="boardCard">
         <div class="card-label"><span class="card-dot"></span> On the board now</div>
 
         <div class="board-skeleton" id="boardSkeleton" aria-hidden="true" hidden>
@@ -621,6 +702,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
             <span class="board-updates"><b id="updateCount">0</b> total updates</span>
+            <span class="board-updated" id="boardUpdated" hidden>Updated just now</span>
           </div>
         </div>
 
@@ -630,7 +712,7 @@
             <div class="stat-label">Total updates</div>
           </div>
           <div class="stat">
-            <div class="stat-value" id="statWriter">—</div>
+            <button class="stat-writer" id="statWriter" type="button" title="Copy address">—</button>
             <div class="stat-label">Last writer</div>
           </div>
           <div class="stat">
@@ -659,15 +741,18 @@
           </div>
           <span class="char-progress" id="charProgress" aria-hidden="true"></span>
           <button class="btn-primary btn-full write-btn" id="writeBtn" type="button" disabled>Save to blockchain</button>
+          <div class="tx-status" id="txStatus" role="status" aria-live="polite" hidden>
+            <span class="tx-dot" aria-hidden="true"></span><span class="tx-label"></span>
+          </div>
         </article>
 
         <article class="card">
-          <div class="card-label"><span class="card-dot"></span> Recent activity</div>
+          <div class="card-label"><span class="card-dot"></span> Recent activity <span class="history-note" id="historyCount">Latest 12 updates</span></div>
           <div class="history-list" id="historyList" aria-live="polite">
             <div class="history-empty">
               <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-              <p><strong>No messages yet</strong></p>
-              <span>Connect your wallet and refresh to load on-chain activity.</span>
+              <p><strong>No activity yet</strong></p>
+              <span>Connect your wallet and refresh to load the latest on-chain updates.</span>
             </div>
           </div>
         </article>
@@ -819,6 +904,7 @@
       const input = document.getElementById("messageInput");
 
       if (connected) {
+        btn.disabled = false;
         btn.className = "btn-addr";
         btn.innerHTML =
           '<span class="dot is-on" aria-hidden="true"></span>' +
@@ -831,6 +917,7 @@
         writeBtn.disabled = false;
         input.disabled = false;
       } else {
+        btn.disabled = false;
         btn.className = "btn-primary";
         btn.innerHTML = ICON.wallet + '<span>Connect Wallet</span>';
         btn.onclick = connectWallet;
@@ -841,38 +928,51 @@
       }
     }
 
-    async function copyWallet() {
-      if (!userAddress) return;
-      if (await copyText(userAddress)) {
-        flashCopied(document.getElementById("connectBtn"));
-        showToast("Wallet address copied", "success");
-      } else {
-        showToast("Couldn’t copy address", "error");
-      }
-    }
-
-    function copyUpdater() {
-      const chip = document.getElementById("updaterChip");
-      if (!_lastUpdater) return;
-      copyText(_lastUpdater).then(ok => {
-        if (ok) { flashCopied(chip); showToast("Address copied", "success"); }
+    function copyAddressTo(el, fullAddr, label) {
+      if (!fullAddr) return;
+      copyText(fullAddr).then(ok => {
+        if (ok) { flashCopied(el); showToast(label || "Address copied", "success"); }
         else showToast("Couldn’t copy address", "error");
       });
+    }
+
+    function copyWallet() {
+      copyAddressTo(document.getElementById("connectBtn"), userAddress, "Wallet address copied");
+    }
+
+    function copyUpdater(btn) {
+      copyAddressTo(btn || document.getElementById("updaterChip"), _lastUpdater);
     }
 
     function copyHistory(btn) {
-      const full = btn.getAttribute("data-full");
-      if (!full) return;
-      copyText(full).then(ok => {
-        if (ok) { flashCopied(btn); showToast("Address copied", "success"); }
-        else showToast("Couldn’t copy address", "error");
-      });
+      copyAddressTo(btn, btn.getAttribute("data-full"));
     }
 
     function setNetworkPill(text, wrong) {
       const pill = document.getElementById("networkPill");
       document.getElementById("networkPillText").textContent = text;
       pill.classList.toggle("wrong", !!wrong);
+    }
+
+    function setTxStatus(text, type) {
+      const el = document.getElementById("txStatus");
+      el.hidden = false;
+      el.className = "tx-status " + (type || "");
+      el.querySelector(".tx-label").textContent = text;
+    }
+
+    function clearTxStatus() {
+      const el = document.getElementById("txStatus");
+      el.hidden = true;
+      el.className = "tx-status";
+    }
+
+    function friendlyError(err, fallback) {
+      const msg = err?.reason || err?.shortMessage || err?.message || "";
+      if (err?.code === 4001 || err?.code === "ACTION_REJECTED" || /user rejected|declined|denied|cancelled|canceled/i.test(msg)) {
+        return "This was declined in your wallet — nothing was changed on-chain.";
+      }
+      return msg || fallback;
     }
 
     // ─── Confetti (refined) ─────────────────────────────
@@ -959,6 +1059,10 @@
                 method: "wallet_addEthereumChain",
                 params: [BASE_SEPOLIA_PARAMS]
               });
+            } else if (switchErr.code === 4001 || switchErr.code === "ACTION_REJECTED") {
+              const e = new Error("You declined the network switch — HelloBase runs on Base Sepolia.");
+              e.friendly = true;
+              throw e;
             } else {
               throw switchErr;
             }
@@ -983,7 +1087,7 @@
         window.ethereum.on("chainChanged", () => window.location.reload());
       } catch (err) {
         console.error(err);
-        showToast(err?.message || "Connection failed", "error");
+        showToast(err?.friendly ? err.message : friendlyError(err, "Connection failed"), "error");
         setConnectedUI(false);
       } finally {
         if (!userAddress) {
@@ -1049,37 +1153,77 @@
         return;
       }
       const btn = document.getElementById("writeBtn");
+      let succeeded = false;
+      btn.classList.add("is-pending");
       try {
         setBusy(btn, "Awaiting approval…");
+        setTxStatus("Step 1 of 2 — approve in your wallet");
         const tx = await contract.setMessage(val);
-        showToast("Transaction submitted — waiting for confirmation…");
         setBusy(btn, "Confirming on-chain…");
+        setTxStatus("Step 2 of 2 — confirming on Base…");
+        showToast("Transaction submitted — waiting for confirmation…");
         await tx.wait();
-        showToast("Your message is now on-chain forever.", "success");
+        succeeded = true;
         fireConfetti();
         input.value = "";
         updateCharCount();
         await readBoard();
         await loadHistory();
+        flashBoard();
+        showToast("Your message is now on-chain forever.", "success");
       } catch (err) {
-        const msg = err?.reason || err?.shortMessage || err?.message || "Transaction failed";
+        const msg = friendlyError(err, "Transaction failed");
+        setTxStatus(msg, "error");
         showToast(msg, "error");
       } finally {
+        btn.classList.remove("is-pending");
         btn.disabled = false;
         btn.innerHTML = btnRest.write;
+        clearTimeout(window._txStatusTimer);
+        if (succeeded) setTxStatus("Confirmed on-chain", "success");
+        window._txStatusTimer = setTimeout(clearTxStatus, 3200);
       }
+    }
+
+    function flashBoard() {
+      const msgEl = document.getElementById("currentMessage");
+      const badge = document.getElementById("boardUpdated");
+      msgEl.classList.remove("flash");
+      void msgEl.offsetWidth; // restart animation
+      msgEl.classList.add("flash");
+      badge.hidden = false;
+      clearTimeout(window._flashTimer);
+      window._flashTimer = setTimeout(() => {
+        msgEl.classList.remove("flash");
+        badge.hidden = true;
+      }, 4200);
     }
 
     // ─── History ───────────────────────────────────────
     function skeletonRows(n) {
       let out = '<div class="history-skeleton" aria-hidden="true">';
-      for (let i = 0; i < n; i++) out += '<span class="skeleton"></span>';
+      for (let i = 0; i < n; i++) {
+        out +=
+          '<div class="skeleton-item">' +
+          '<div class="skeleton-head">' +
+          '<span class="skeleton skeleton-chip" style="width:54px"></span>' +
+          '<span class="skeleton skeleton-chip" style="width:128px"></span>' +
+          "</div>" +
+          '<span class="skeleton skeleton-line" style="width:86%"></span>' +
+          '<span class="skeleton skeleton-line" style="width:44%"></span>' +
+          "</div>";
+      }
       return out + "</div>";
+    }
+
+    function setHistoryCount(text) {
+      document.getElementById("historyCount").textContent = text;
     }
 
     async function loadHistory() {
       if (!contract || !provider) return;
       const list = document.getElementById("historyList");
+      setHistoryCount("Loading…");
       list.innerHTML = skeletonRows(3);
       try {
         const currentBlock = await provider.getBlockNumber();
@@ -1088,6 +1232,7 @@
         const recent = events.slice(-12).reverse();
 
         if (recent.length === 0) {
+          setHistoryCount("No activity");
           list.innerHTML =
             '<div class="history-empty">' +
             '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>' +
@@ -1097,6 +1242,7 @@
           return;
         }
 
+        setHistoryCount(recent.length === 12 ? "Latest 12 updates" : "Latest " + recent.length + " updates");
         const frag = document.createDocumentFragment();
         recent.forEach((ev, i) => {
           const { sender, newMessage, updateId, timestamp } = ev.args;
@@ -1113,8 +1259,14 @@
             "</div>" +
             '<p class="history-msg">' + escapeHtml(newMessage) + "</p>" +
             '<div class="history-foot">' +
+            '<div class="history-left">' +
             '<span class="history-time" title="' + (ms ? new Date(ms).toLocaleString() : "") + '">' + (ms ? timeAgo(ms) : "—") + "</span>" +
             '<span class="history-tx">on-chain</span>' +
+            "</div>" +
+            '<a class="history-link" href="https://sepolia.basescan.org/tx/' + ev.transactionHash + '" target="_blank" rel="noopener" title="View transaction on BaseScan">' +
+            "BaseScan " +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>' +
+            "</a>" +
             "</div>";
           frag.appendChild(item);
         });
@@ -1122,6 +1274,7 @@
         list.appendChild(frag);
       } catch (err) {
         console.warn("History load failed:", err);
+        setHistoryCount("Latest 12 updates");
         list.innerHTML = '<div class="history-empty"><strong>Couldn’t load history</strong><br /><span>RPC limits may apply — refresh to retry.</span></div>';
       }
     }
@@ -1134,6 +1287,7 @@
       document.getElementById("writeBtn").addEventListener("click", setMessage);
       document.getElementById("messageInput").addEventListener("input", updateCharCount);
       document.getElementById("updaterChip").addEventListener("click", copyUpdater);
+      document.getElementById("statWriter").addEventListener("click", () => copyUpdater(document.getElementById("statWriter")));
       updateCharCount();
       if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
         updateContractLink();
