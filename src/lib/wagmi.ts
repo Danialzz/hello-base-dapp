@@ -11,7 +11,14 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { BASE_SEPOLIA_RPC } from "./chain";
 
-const PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "";
+// WalletConnect Cloud project ID — REQUIRED by RainbowKit.
+// Vite env vars are baked in at build time and can't be injected into the
+// static GitHub Pages build, so the ID below is used as a safe fallback. This
+// guarantees the app never boots with an empty project ID (RainbowKit throws
+// and React never mounts). Get / rotate your own at
+// https://cloud.walletconnect.com
+const PROJECT_ID =
+  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "53ae1c1db35129fa00631b4b986848b2";
 
 const wallets = [
   metaMaskWallet,
@@ -19,9 +26,7 @@ const wallets = [
   rabbyWallet,
   braveWallet,
   injectedWallet,
-  // WalletConnect needs a project ID (https://cloud.walletconnect.com).
-  // Omit the connector when none is configured so the app still works.
-  ...(PROJECT_ID ? [walletConnectWallet] : []),
+  walletConnectWallet,
 ];
 
 const connectors = connectorsForWallets(
