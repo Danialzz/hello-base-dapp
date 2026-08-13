@@ -1,0 +1,1 @@
+export const BASE_SEPOLIA_RPC = "https://sepolia.base.org";

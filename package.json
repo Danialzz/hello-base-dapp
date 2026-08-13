@@ -2,20 +2,36 @@
   "name": "hello-base-dapp",
   "version": "1.0.0",
   "description": "Premium on-chain message board on Base. Leave your mark forever on L2.",
+  "private": true,
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
     "deploy:testnet": "hardhat run scripts/deploy.js --network baseSepolia",
     "deploy:mainnet": "hardhat run scripts/deploy.js --network base",
-    "sync:docs": "node scripts/sync-docs.js",
     "node": "hardhat node"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.4",
+    "@tanstack/react-query": "^5.62.0",
+    "dotenv": "^16.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "^2.21.0",
+    "wagmi": "^2.13.0",
+    "@tanstack/query-core": "^5.101.4"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "hardhat": "^2.22.0"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.0"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "hardhat": "^2.22.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
   }
 }
