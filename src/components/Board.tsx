@@ -108,8 +108,18 @@ export default function Board() {
           </svg>
           Live from the blockchain
         </span>
-        <button className="btn-ghost" type="button" onClick={() => refetch()} disabled={isFetching}>
-          Refresh board
+        <button
+          className={"btn-ghost refresh-btn" + (isFetching ? " is-refreshing" : "")}
+          type="button"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          aria-label={isFetching ? "Refreshing board" : "Refresh board"}
+        >
+          <svg className="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4" />
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4" />
+          </svg>
+          <span>{isFetching ? "Refreshing…" : "Refresh board"}</span>
         </button>
       </div>
     </article>
