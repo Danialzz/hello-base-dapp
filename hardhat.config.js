@@ -1,8 +1,11 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001";
+// Never fall back to a publicly known private key. Local Hardhat tests do not
+// need an account, while real deployments must explicitly provide PRIVATE_KEY.
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const BASESCAN_API_KEY = process.env.BASESCAN_API_KEY || "";
+const DEPLOYER_ACCOUNTS = PRIVATE_KEY ? [PRIVATE_KEY] : [];
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -16,21 +19,18 @@ module.exports = {
     },
   },
   networks: {
-    // Local development
     hardhat: {},
 
-    // Base Sepolia Testnet (use this for testing — free ETH via faucet)
     baseSepolia: {
       url: "https://sepolia.base.org",
       chainId: 84532,
-      accounts: [PRIVATE_KEY],
+      accounts: DEPLOYER_ACCOUNTS,
     },
 
-    // Base Mainnet (use only when ready for production)
     base: {
       url: "https://mainnet.base.org",
       chainId: 8453,
-      accounts: [PRIVATE_KEY],
+      accounts: DEPLOYER_ACCOUNTS,
     },
   },
   etherscan: {
