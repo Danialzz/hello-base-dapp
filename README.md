@@ -1,217 +1,143 @@
 # HelloBase 🔵 — Leave Your Mark on Base
 
-A premium public on-chain message board on **Base Sepolia**. Anyone can read the board instantly — no wallet needed — and connect a wallet to write up to 280 characters. Your message lives on the chain forever and every write is recorded in the event history.
+A premium public on-chain message board on **Base Sepolia**. Anyone can read the board instantly — no wallet needed — and connect a wallet to write up to 280 characters. Your message lives on-chain and every write is recorded in the event history.
 
-Built with a calm, high-end web3 aesthetic — think Base, Coinbase, Rainbow — rather than a typical demo dApp.
+Built with a calm, high-end web3 aesthetic inspired by Base, Coinbase and Rainbow rather than a typical demo dApp.
 
 **Live**
 - 🔵 **App:** [danialzz.github.io/hello-base-dapp](https://danialzz.github.io/hello-base-dapp/)
 - 🔎 **Contract on BaseScan:** [sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9](https://sepolia.basescan.org/address/0x91296937E87cE57fF3cDD787289576E505BdD3c9)
 
-**GitHub repository metadata**
-
-Set the repo **About / description** on GitHub to:
-
-> Premium on-chain message board on Base Sepolia. Leave your mark forever on L2.
-
-Suggested topics: `base`, `base-sepolia`, `dapp`, `web3`, `solidity`, `ethereum`, `onchain`.
-
----
-
 ## Features
 
-- **Polished, product-grade UI** — refined dark glassmorphism with a Base-blue accent, gradient mesh + noise texture, ambient glows and a subtle dot grid
-- **Design system** — Space Grotesk display type, Inter body, JetBrains Mono for on-chain data; generous spacing, layered shadows and micro-interactions throughout
-- **Hero message display** — the current message is the focal point of the page, styled as a large quote panel with live board stats
-- **View-only mode** — the board and recent history load instantly through a public Base Sepolia RPC; no wallet needed to read
-- **Real-time board state** — message + last writer + total updates via one `getBoardState()` call
-- **On-chain history feed** — latest 12 events with relative timestamps, update IDs, copyable address badges and a per-transaction BaseScan link
-- **Skeleton loaders** — structured shimmer placeholders for the board and history instead of plain spinners
-- **Auto network handling** — detects the wrong network and switches / adds Base Sepolia automatically; declines are handled gracefully
-- **Multi-wallet connect** — RainbowKit wallet selector (MetaMask, Coinbase Wallet, Rabby, Brave, WalletConnect, browser fallback) themed to Base blue
-- **Wallet disconnect** — an account menu on the address button lets you copy your address or disconnect cleanly, falling back to view-only mode
-- **Product-grade footer** — branded footer with gradient hairline, contract address (copy + BaseScan link) and network status
-- **Clear transaction states** — step-by-step status line ("approve in wallet" → "confirming on Base") plus a pulsing button glow while a write is pending
-- **Refined confetti** — a calm, eased burst on successful writes, plus a subtle glow flash on the hero message (respects `prefers-reduced-motion`)
-- **Copy-to-clipboard** on every truncated address with clear "Copied" feedback
-- **Live network status pill** in the header
-- **Branding & social** — custom SVG logo, favicon set (`.ico` + SVG + apple-touch-icon + webmanifest), Open Graph and Twitter Card tags
-- **Accessibility basics** — visible focus states, `aria` labels, semantic landmarks, keyboard-friendly
-- **Fully tested Hardhat project** + Basescan verification ready
-
----
+- **Product-grade UI** — dark glassmorphism, Base-blue accents, gradient mesh, noise texture and ambient glows
+- **View-only mode** — read the board and recent history without connecting a wallet
+- **Real-time board state** — message, last writer and update count via `getBoardState()`
+- **On-chain history** — latest events with timestamps, update IDs, copyable addresses and BaseScan links
+- **Skeleton loaders** — polished loading states instead of plain spinners
+- **Automatic network handling** — detects and switches to Base Sepolia when supported
+- **Multi-wallet connect** — RainbowKit with MetaMask, Coinbase Wallet, Rabby, Brave, WalletConnect and browser wallets
+- **Wallet controls** — copy address and disconnect from the connected account menu
+- **Responsive layout** — desktop and mobile-friendly header, cards and controls
+- **Favicon/branding** — shared HelloBase logo across the app, browser tab and install metadata
+- **Accessibility basics** — focus states, ARIA labels and keyboard-friendly controls
+- **Hardhat tests** — contract behavior covered by automated unit tests
 
 ## Project Structure
 
-```
+```text
 hello-base-dapp/
-├── contracts/HelloBase.sol   # Solidity contract
-├── scripts/deploy.js         # Deploy script
-├── test/HelloBase.test.js    # Unit tests
-├── src/                      # React + Vite frontend source
-│   ├── App.tsx               # App shell & layout
-│   ├── components/           # Board, WriteForm, History, Topbar, Footer, ...
-│   ├── hooks/                # useHistory, useAutoSwitchChain
-│   ├── lib/                  # contract ABI, wagmi config, utils
-│   └── index.css             # Design system / premium styles
-├── public/                   # Logo, favicons, webmanifest, OG image
-├── docs/                     # GitHub Pages build (from `npm run build`)
+├── contracts/HelloBase.sol
+├── scripts/deploy.js
+├── test/HelloBase.test.js
+├── src/
+│   ├── App.tsx
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
+│   └── index.css
+├── public/
+├── docs/                     # generated GitHub Pages build
+├── .github/workflows/        # CI + docs build workflow
 ├── hardhat.config.js
 ├── package.json
 ├── .env.example
 └── README.md
 ```
 
-> **`docs/` is the GitHub Pages build output** generated by `npm run build`
-> (see `vite.config.ts`, which points `outDir` at `docs/` with `base: "./"`).
+## Development
 
----
-
-## Building the GitHub Pages site
-
-HelloBase is a **React + Vite** app. Rebuild the static output with:
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Run the frontend locally:
+
+```bash
+npm run dev
+```
+
+Run type checking and contract tests:
+
+```bash
+npm run typecheck
+npm test
+```
+
+Build the production site:
+
+```bash
 npm run build
 ```
 
-The production build is written to **`docs/`** (see `vite.config.ts`:
-`outDir: "docs"`, `base: "./"` — the relative base keeps assets working at the
-project path `/hello-base-dapp/`). Commit `docs/` and GitHub Pages serves it.
+The Vite build is written to `docs/`. GitHub Pages serves the `docs/` directory from the `main` branch.
 
-> Before building, ensure a WalletConnect Cloud project ID is configured (see
-> below). The deployed HelloBase project ID is already wired in, so `npm run
-> build` works out of the box — the app will still boot even without a `.env`.
+### Automated validation and Pages build
 
----
+Every push and pull request targeting `main` runs:
 
-## Quick Start
+1. Dependency installation
+2. TypeScript type checking
+3. Hardhat contract tests
+4. Vite production build
 
-### 1. Install
+For pushes to `main`, the workflow also commits any changed `docs/` output back to the repository so GitHub Pages stays synchronized with `src/`.
 
-```bash
-npm install
-```
+## Environment
 
-### 2. Environment
+Copy `.env.example` to `.env` for local deployment configuration:
 
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-
-```
+```text
 PRIVATE_KEY=your_wallet_private_key_without_0x
 BASESCAN_API_KEY=optional_for_verification
+VITE_WALLETCONNECT_PROJECT_ID=your_project_id
 ```
 
-> Never commit `.env`. The private key must have Base Sepolia ETH.
+Never commit `.env` or a private key. The Hardhat deployment configuration intentionally has **no fallback private key**; deployment accounts must be explicitly provided through `PRIVATE_KEY`.
 
-### 3. WalletConnect Cloud project ID (required)
+The frontend can use `VITE_CONTRACT_ADDRESS` to override the deployed contract address at build time.
 
-**HelloBase is pre-configured** with its WalletConnect project ID
-(`53ae1c1db35129fa00631b4b986848b2`) baked into `src/lib/wagmi.ts` as a safe
-fallback, so **the app never blanks out** — it boots and connects even with no
-`.env` at all.
+## Contract
 
-- Want your own? Get a **free** project ID at
-  [cloud.walletconnect.com](https://cloud.walletconnect.com).
-- Set it via `VITE_WALLETCONNECT_PROJECT_ID` in `.env`, **or** replace the
-  fallback constant in `src/lib/wagmi.ts`, then rebuild.
-- RainbowKit **throws on startup** if the project ID is empty, so ensure it is
-  never empty.
+The current Base Sepolia deployment is:
 
-### 4. Compile & Test
+`0x91296937E87cE57fF3cDD787289576E505BdD3c9`
 
-```bash
-npx hardhat compile
-npx hardhat test
-```
+The contract supports:
 
-### 5. Get free testnet ETH
+| Function / Event | Description |
+|---|---|
+| `getMessage()` | Current message |
+| `setMessage(string)` | Update message, 1–280 characters |
+| `getBoardState()` | Message, last updater and update count |
+| `lastUpdater()` | Address of last writer |
+| `updateCount()` | Total number of updates |
+| `MessageUpdated(...)` | Emitted for every write |
 
-- [Coinbase Base Sepolia Faucet](https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet)
-- [QuickNode Faucet](https://faucet.quicknode.com/base/sepolia)
-- [Alchemy Faucet](https://www.alchemy.com/faucets/base-sepolia)
+## Deployment
 
-### 6. Deploy to Base Sepolia
+Base Sepolia:
 
 ```bash
 npm run deploy:testnet
 ```
 
-Copy the printed contract address.
-
-### 7. Wire the frontend
-
-The deployed HelloBase address is baked into `src/lib/contract.ts`. To point the
-frontend at your own deployment, set `VITE_CONTRACT_ADDRESS` in `.env`:
-
-```
-VITE_CONTRACT_ADDRESS=0xYOUR_CONTRACT_ADDRESS_HERE
-```
-
-Then rebuild:
-
-```bash
-npm run build
-```
-
-### 8. Run it locally
-
-```bash
-npm run dev        # local dev server with hot reload
-npm run build      # production build → docs/
-npm run preview    # preview the production build
-```
-
-1. **Read without connecting** — the board and recent history load instantly in view-only mode
-2. Click **Connect Wallet** and pick a wallet from the selector (MetaMask, Coinbase Wallet, Rabby, Brave, WalletConnect, or your browser wallet)
-3. Approve the connection → it will switch / add Base Sepolia automatically
-4. Write a message, watch the board and history update
-5. Click any address to copy it; use the menu on your address button to disconnect
-
----
-
-## Contract API
-
-| Function / Event | Description |
-|---|---|
-| `getMessage()` | Current message string |
-| `setMessage(string)` | Update message (1–280 chars) |
-| `getBoardState()` | Returns `(message, lastUpdater, updateCount)` |
-| `lastUpdater()` | Address of last writer |
-| `updateCount()` | Total number of updates |
-| `MessageUpdated(sender, newMessage, updateId, timestamp)` | Emitted on every write |
-
----
-
-## Deploy to Base Mainnet
-
-When ready:
+Base mainnet:
 
 ```bash
 npm run deploy:mainnet
 ```
 
-Then update the frontend:
-- `CONTRACT_ADDRESS`
-- Chain ID → `"0x2105"` (8453)
-- Explorer links → `basescan.org`
-- Network pill / badge text → Mainnet
+Before a production deployment, verify the contract address, chain, explorer URL and frontend environment values. Do not put a deployment private key in source control.
 
----
-
-## Tech
+## Tech Stack
 
 - Solidity 0.8.20
 - Hardhat + hardhat-toolbox
-- React 18 + Vite, wagmi + viem, RainbowKit
-- Base Sepolia (chainId 84532)
-- Fonts: [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk), [Inter](https://fonts.google.com/specimen/Inter), [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
-
----
+- React 18 + Vite
+- wagmi + viem + RainbowKit
+- Base Sepolia (chain ID 84532)
 
 Made for Base. Leave your mark 🔵
