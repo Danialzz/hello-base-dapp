@@ -2,21 +2,23 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import NetworkPill from "./NetworkPill";
 
 const WALLET_ICON = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-    <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
-  </svg>
+  <span className="wallet-icon" aria-hidden="true">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15v4" />
+      <path d="M5 7h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V7" />
+      <path d="M17 13h.01" />
+    </svg>
+  </span>
 );
 
 const CARET = (
@@ -59,7 +61,9 @@ export default function Topbar() {
                     onClick={openAccountModal}
                     title="Account"
                   >
-                    <span className="dot is-on" aria-hidden="true"></span>
+                    <span className="account-status">
+                      <span className="dot is-on" aria-hidden="true"></span>
+                    </span>
                     <span>{account?.displayName}</span>
                     {CARET}
                     <span className="sr-only">Account</span>
@@ -72,7 +76,8 @@ export default function Topbar() {
                     disabled={!ready}
                   >
                     {WALLET_ICON}
-                    <span>Connect Wallet</span>
+                    <span className="connect-label">Connect wallet</span>
+                    <span className="connect-arrow" aria-hidden="true">↗</span>
                   </button>
                 )}
               </div>
