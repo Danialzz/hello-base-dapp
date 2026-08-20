@@ -5,6 +5,7 @@ import Board from "./components/Board";
 import WriteForm from "./components/WriteForm";
 import History from "./components/History";
 import Footer from "./components/Footer";
+import "./hero.css";
 
 function App() {
   useAutoSwitchChain();
@@ -21,12 +22,23 @@ function App() {
         <Topbar />
 
         <main className="app">
-          <section className="hero">
-            <p className="hero-sub">
-              Leave your mark on Base.<br />
-              Every message is public and permanent.
+          <section className="hero" aria-labelledby="hero-title">
+            <div className="hero-eyebrow">
+              <span className="hero-eyebrow-dot" aria-hidden="true"></span>
+              A PERMANENT MESSAGE ON BASE
+            </div>
+
+            <h1 id="hero-title" className="hero-title">
+              Leave a mark on Base.
+            </h1>
+
+            <p className="hero-lead">Write it once. Keep it forever.</p>
+
+            <p className="hero-description">
+              Your message is permanently recorded on-chain and visible to everyone.
             </p>
-            <div className="hero-badges">
+
+            <div className="hero-badges" aria-label="DApp features">
               <span className="hero-badge">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -38,6 +50,7 @@ function App() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <rect x="3" y="11" width="18" height="10" rx="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -55,6 +68,7 @@ function App() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
@@ -72,6 +86,7 @@ function App() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M12 2v20M2 12h20" />
                   <circle cx="12" cy="12" r="10" />
