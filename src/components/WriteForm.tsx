@@ -139,8 +139,8 @@ export default function WriteForm() {
             </>
           ) : (
             <>
-              <span>Publish on-chain</span>
               {SEND_ICON}
+              <span>Publish on-chain</span>
             </>
           )}
         </button>
@@ -155,7 +155,6 @@ export default function WriteForm() {
             >
               {WALLET_ICON}
               <span>Connect wallet to write</span>
-              {SEND_ICON}
             </button>
           )}
         </ConnectButton.Custom>
