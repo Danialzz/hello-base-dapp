@@ -13,6 +13,5 @@
   <rect x="24" y="24" width="464" height="464" rx="128" fill="url(#g)"/>
   <rect x="24" y="24" width="464" height="464" rx="128" fill="url(#shine)"/>
   <rect x="28" y="28" width="456" height="456" rx="124" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="3"/>
-  <!-- Refined B -->
   <path fill="#fff" d="M168 146h132c48 0 84 26 84 74 0 30-16 52-42 64 34 12 56 38 56 76 0 54-42 84-100 84H168V146zm58 48v78h68c26 0 42-12 42-36s-16-42-42-42h-68zm0 126v90h78c30 0 48-14 48-44s-18-46-48-46h-78z"/>
 </svg>
