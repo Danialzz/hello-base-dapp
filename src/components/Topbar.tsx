@@ -76,8 +76,7 @@ export default function Topbar() {
                     disabled={!ready}
                   >
                     {WALLET_ICON}
-                    <span className="connect-label">Connect wallet</span>
-                    <span className="connect-arrow" aria-hidden="true">↗</span>
+                    <span className="connect-label">Connect Wallet</span>
                   </button>
                 )}
               </div>

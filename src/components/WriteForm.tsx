@@ -19,10 +19,10 @@ const WALLET_ICON = (
   </span>
 );
 
-const ARROW_ICON = (
+const SEND_ICON = (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M5 12h14" />
-    <path d="m13 6 6 6-6 6" />
+    <path d="m22 2-7 20-4-9-9-4Z" />
+    <path d="M22 2 11 13" />
   </svg>
 );
 
@@ -140,7 +140,7 @@ export default function WriteForm() {
           ) : (
             <>
               <span>Publish on-chain</span>
-              {ARROW_ICON}
+              {SEND_ICON}
             </>
           )}
         </button>
@@ -155,7 +155,7 @@ export default function WriteForm() {
             >
               {WALLET_ICON}
               <span>Connect wallet to write</span>
-              {ARROW_ICON}
+              {SEND_ICON}
             </button>
           )}
         </ConnectButton.Custom>

@@ -22,13 +22,9 @@ function App() {
 
         <main className="app">
           <section className="hero">
-            <p className="hero-eyebrow">An on-chain message board</p>
-            <h1 className="hero-title">
-              Leave your mark <span>on Base</span>
-            </h1>
             <p className="hero-sub">
-              Read the board instantly — no wallet needed. Connect to write up to 280 characters, and
-              your message becomes part of the chain — public and permanent.
+              Leave your mark on Base.<br />
+              Every message is public and permanent.
             </p>
             <div className="hero-badges">
               <span className="hero-badge">
