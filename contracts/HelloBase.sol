@@ -6,7 +6,6 @@ pragma solidity ^0.8.20;
 /// @dev Stores the latest message + tracks total updates and last writer
 contract HelloBase {
     string private message;
-    address public owner;
     address public lastUpdater;
     uint256 public updateCount;
 
@@ -21,7 +20,6 @@ contract HelloBase {
         require(bytes(_initialMessage).length > 0, "Initial message cannot be empty");
         require(bytes(_initialMessage).length <= 280, "Message too long (max 280 chars)");
         message = _initialMessage;
-        owner = msg.sender;
         lastUpdater = msg.sender;
         updateCount = 0;
         emit MessageUpdated(msg.sender, _initialMessage, 0, block.timestamp);

@@ -36,14 +36,17 @@ async function main() {
   console.log("──────────────────────────────────────────");
   console.log("");
   console.log("Next steps:");
-  console.log("1. Copy the address above into frontend/index.html");
-  console.log("   → const CONTRACT_ADDRESS = \"" + address + "\";");
+  console.log("1. Update the contract address in src/lib/contract.ts");
+  console.log("   → export const CONTRACT_ADDRESS = \"" + address + "\";");
   console.log("");
   console.log("2. Verify on Basescan (optional):");
   console.log(`   npx hardhat verify --network baseSepolia ${address} "${initialMessage}"`);
   console.log("");
-  console.log("3. Open frontend/index.html in your browser");
-  console.log("   and connect MetaMask (Base Sepolia).");
+  console.log("3. Rebuild the frontend:");
+  console.log("   npm run build");
+  console.log("");
+  console.log("4. Run locally:");
+  console.log("   npm run dev");
   console.log("");
 }
 

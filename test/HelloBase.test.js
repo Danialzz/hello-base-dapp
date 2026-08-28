@@ -65,7 +65,4 @@ describe("HelloBase", function () {
     await expect(helloBase.setMessage(longMsg)).to.be.revertedWith("Message too long (max 280 chars)");
   });
 
-  it("should store the owner address", async function () {
-    expect(await helloBase.owner()).to.equal(owner.address);
-  });
 });
